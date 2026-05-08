@@ -25,7 +25,9 @@ export default function ShowcaseScreen() {
       by: { name: user?.profile.name || 'You', tag: user?.profile.cohort || 'ICE' },
       collaborators: [],
       skills: ['Add skills'],
-      summary: 'A new project draft. Tap to expand and fill in details.',
+      description: 'A new project draft. Tap to expand and fill in details.',
+      projectLink: '',
+      contactInfo: user?.profile.email || '',
       media: [{ kind: 'image', label: 'Cover image' }, { kind: 'link', label: 'Add a link' }],
       likes: 0, views: 0,
     };

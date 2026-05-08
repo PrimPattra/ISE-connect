@@ -1,16 +1,13 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Modal } from '@/components/ui/modal';
 import { TextField } from '@/components/ui/text-field';
 import { SelectField } from '@/components/ui/select-field';
 import { Icon } from '@/components/icon';
-import { Ionicons } from '@expo/vector-icons';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 
 interface ReviewDraft {
-  company: string; role: string;
-  overall: number; culture: number; wlb: number; mentorship: number;
-  pros: string; cons: string;
+  company: string; role: string; reviewText: string;
   includeSalary: boolean; amount: string; period: string; currency: string; salaryRole: string;
 }
 
@@ -20,35 +17,12 @@ interface Props {
   onSubmit: (d: ReviewDraft) => void;
 }
 
-function RatingRow({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
-  return (
-    <View style={r.wrap}>
-      <Text style={r.label}>{label}</Text>
-      <View style={r.stars}>
-        {[1, 2, 3, 4, 5].map(n => (
-          <TouchableOpacity key={n} onPress={() => onChange(n)}>
-            <Ionicons name={n <= value ? 'star' : 'star-outline'} size={24} color={C.ember} />
-          </TouchableOpacity>
-        ))}
-        <Text style={r.val}>{value}</Text>
-      </View>
-    </View>
-  );
-}
-
-const r = StyleSheet.create({
-  wrap: { marginBottom: 12 },
-  label: { fontSize: 12, fontWeight: '500', color: C.ink2, marginBottom: 6 },
-  stars: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  val: { fontSize: 13, fontFamily: F.mono, color: C.muted, marginLeft: 4 },
-});
-
 export function WriteReviewModal({ open, onClose, onSubmit }: Props) {
   const [d, setD] = useState<ReviewDraft>({
-    company: '', role: '', overall: 4, culture: 4, wlb: 4, mentorship: 4,
-    pros: '', cons: '', includeSalary: false, amount: '', period: 'month', currency: 'THB', salaryRole: '',
+    company: '', role: '', reviewText: '',
+    includeSalary: false, amount: '', period: 'month', currency: 'THB', salaryRole: '',
   });
-  const upd = (k: keyof ReviewDraft, v: ReviewDraft[typeof k]) => setD(x => ({ ...x, [k]: v }));
+  const upd = <K extends keyof ReviewDraft>(k: K, v: ReviewDraft[K]) => setD(x => ({ ...x, [k]: v }));
 
   return (
     <Modal
@@ -72,32 +46,17 @@ export function WriteReviewModal({ open, onClose, onSubmit }: Props) {
         <TextField label="Your role there" placeholder="e.g. SWE Intern" value={d.role} onChangeText={v => upd('role', v)} />
       </View>
 
-      <View style={s.ratings}>
-        <RatingRow label="Culture" value={d.culture} onChange={v => upd('culture', v)} />
-        <RatingRow label="Work-life balance" value={d.wlb} onChange={v => upd('wlb', v)} />
-        <RatingRow label="Mentorship" value={d.mentorship} onChange={v => upd('mentorship', v)} />
-      </View>
-
       <View style={s.field}>
-        <Text style={s.fieldLabel}>Pros</Text>
+        <Text style={s.fieldLabel}>Your review</Text>
         <TextInput
           style={s.textarea}
-          multiline numberOfLines={3}
-          placeholder="What worked? Be specific."
+          multiline
+          numberOfLines={5}
+          placeholder="Share your honest experience — what was the culture like? Would you recommend it to a fellow ISE student?"
           placeholderTextColor={C.muted}
-          value={d.pros}
-          onChangeText={v => upd('pros', v)}
-        />
-      </View>
-      <View style={s.field}>
-        <Text style={s.fieldLabel}>Cons</Text>
-        <TextInput
-          style={s.textarea}
-          multiline numberOfLines={3}
-          placeholder="What would you change?"
-          placeholderTextColor={C.muted}
-          value={d.cons}
-          onChangeText={v => upd('cons', v)}
+          value={d.reviewText}
+          onChangeText={v => upd('reviewText', v)}
+          textAlignVertical="top"
         />
       </View>
 
@@ -125,11 +84,10 @@ export function WriteReviewModal({ open, onClose, onSubmit }: Props) {
 }
 
 const s = StyleSheet.create({
-  grid: { gap: 10, marginBottom: 16 },
-  ratings: { marginBottom: 16 },
+  grid: { gap: 10, marginBottom: 14 },
   field: { marginBottom: 12 },
   fieldLabel: { fontSize: 12, fontWeight: '500', color: C.ink2, marginBottom: 6 },
-  textarea: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink, minHeight: 80, textAlignVertical: 'top' },
+  textarea: { backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink, minHeight: 120 },
   salaryBox: { borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 14, backgroundColor: C.paper2, marginTop: 4 },
   salaryToggle: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   checkbox: { width: 20, height: 20, borderRadius: 4, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper, marginTop: 2, alignItems: 'center', justifyContent: 'center' },

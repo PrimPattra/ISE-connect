@@ -43,6 +43,7 @@ const MAP: Record<string, IoniconName> = {
   edit: 'pencil-outline',
   trash: 'trash-outline',
   upload: 'cloud-upload-outline',
+  'id-card': 'id-card-outline',
   down: 'chevron-down-outline',
   up: 'chevron-up-outline',
   sliders: 'options-outline',

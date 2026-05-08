@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Modal } from '@/components/ui/modal';
 import { TagPill } from '@/components/ui/tag-pill';
 import { Card } from '@/components/ui/card';
@@ -9,12 +9,18 @@ import type { Job } from '@/types';
 interface Props {
   job: Job | null;
   onClose: () => void;
-  onApply: (j: Job) => void;
 }
 
-export function JobDetailModal({ job, onClose, onApply }: Props) {
+export function JobDetailModal({ job, onClose }: Props) {
   if (!job) return null;
   const initials = job.poster.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
+
+  const handleApply = () => {
+    if (job.applicationLink) {
+      Linking.openURL(job.applicationLink);
+    }
+  };
+
   return (
     <Modal
       open={!!job}
@@ -25,8 +31,8 @@ export function JobDetailModal({ job, onClose, onApply }: Props) {
           <TouchableOpacity style={[btn.base, btn.ghost]} onPress={onClose}>
             <Text style={btn.ghostText}>Close</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[btn.base, btn.primary]} onPress={() => onApply(job)}>
-            <Text style={btn.primaryText}>One-click apply</Text>
+          <TouchableOpacity style={[btn.base, btn.primary]} onPress={handleApply}>
+            <Text style={btn.primaryText}>Apply</Text>
             <Icon name="send" size={15} color={C.paper} />
           </TouchableOpacity>
         </>
@@ -34,7 +40,7 @@ export function JobDetailModal({ job, onClose, onApply }: Props) {
     >
       <View style={s.tags}>
         <TagPill>{job.type}</TagPill>
-        <TagPill>{job.cycle}</TagPill>
+        <TagPill>{job.period}</TagPill>
         <Text style={s.posted}>{job.posted}</Text>
       </View>
       <Text style={s.blurb}>{job.blurb}</Text>
@@ -57,7 +63,7 @@ export function JobDetailModal({ job, onClose, onApply }: Props) {
           </View>
         </View>
         <View style={s.divider} />
-        {[['Location', job.location], ['Comp', job.comp], ['Cycle', job.cycle], ['Type', job.type]].map(([k, v]) => (
+        {[['Location', job.location], ['Comp', job.comp], ['Period', job.period], ['Type', job.type]].map(([k, v]) => (
           <View key={k} style={s.dl}>
             <Text style={s.dt}>{k}</Text>
             <Text style={s.dd}>{v}</Text>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Stepper } from '@/components/auth/stepper';
 import { RoleCard } from '@/components/auth/role-card';
 import { TextField } from '@/components/ui/text-field';
@@ -12,54 +12,135 @@ type Mode = 'signin' | 'signup';
 type Role = 'hunter' | 'recruiter';
 
 interface FormState {
-  name: string; email: string; password: string;
+  firstName: string; lastName: string;
+  email: string; password: string; confirmPassword: string;
+  studentId: string;
   cohort: string; track: string; headline: string; skills: string;
   company: string; companyTag: string; isAlumni: boolean; alumniCohort: string; position: string;
 }
+
+type FormErrors = Partial<Record<keyof FormState, string>>;
 
 const COHORT_OPTIONS = ['ICE#19', 'ICE#20', 'ICE#21', 'ICE#22', 'ICE#23', 'Alumni', 'Faculty'].map(v => ({ value: v, label: v }));
 const TRACK_OPTIONS = ['Computer', 'Communication', 'Industrial', 'Other'].map(v => ({ value: v, label: v }));
 const ALUMNI_OPTIONS = ['ICE#08', 'ICE#10', 'ICE#11', 'ICE#13', 'ICE#14', 'ICE#16', 'ICE#18', 'Faculty'].map(v => ({ value: v, label: v }));
 
+const ENGLISH_RE = /^[A-Za-z\s'\-.]+$/;
+const STUDENT_ID_RE = /^\d{10}$/;
+const ALLOWED_DOMAINS = ['gmail.com', 'student.chula.ac.th', 'alumni.chula.ac.th'];
+
+function validateEmailDomain(email: string): string | undefined {
+  if (!email.trim()) return 'Email is required.';
+  const domain = email.split('@')[1];
+  if (!domain || !ALLOWED_DOMAINS.includes(domain)) {
+    return 'Use @gmail.com, @student.chula.ac.th, or @alumni.chula.ac.th.';
+  }
+  return undefined;
+}
+
 export default function AuthScreen() {
-  const { setUser, toast } = useAppContext();
+  const { setUser, toast, registerUser, isEmailRegistered } = useAppContext();
   const [mode, setMode] = useState<Mode>('signup');
   const [step, setStep] = useState(0);
   const [role, setRole] = useState<Role>('hunter');
   const [form, setForm] = useState<FormState>({
-    name: '', email: '', password: '',
-    cohort: 'ICE#22', track: 'Computer', headline: '', skills: 'Python, React',
+    firstName: '', lastName: '',
+    email: '', password: '', confirmPassword: '', studentId: '',
+    cohort: 'ICE#22', track: 'Computer', headline: '', skills: '',
     company: '', companyTag: '', isAlumni: true, alumniCohort: 'ICE#16', position: '',
   });
-  const upd = (k: keyof FormState, v: FormState[typeof k]) => setForm(f => ({ ...f, [k]: v }));
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const stepsByRole = {
-    hunter: ['Account', 'Role', 'You', 'Profile'],
-    recruiter: ['Account', 'Role', 'You', 'Company'],
+  const upd = (k: keyof FormState, v: FormState[typeof k]) => {
+    setForm(f => ({ ...f, [k]: v }));
+    setErrors(e => ({ ...e, [k]: undefined }));
+  };
+
+  const stepLabels = {
+    hunter: ['Role', 'Account', 'About you', 'Skills'],
+    recruiter: ['Role', 'Account', 'About you', 'Company'],
+  };
+
+  const validateAccount = (): FormErrors => {
+    const e: FormErrors = {};
+    if (!form.firstName.trim()) e.firstName = 'First name is required.';
+    else if (!ENGLISH_RE.test(form.firstName)) e.firstName = 'English characters only.';
+    if (!form.lastName.trim()) e.lastName = 'Last name is required.';
+    else if (!ENGLISH_RE.test(form.lastName)) e.lastName = 'English characters only.';
+    const emailErr = validateEmailDomain(form.email);
+    if (emailErr) e.email = emailErr;
+    if (!form.studentId.trim()) e.studentId = 'Student ID is required.';
+    else if (!STUDENT_ID_RE.test(form.studentId)) e.studentId = 'Must be exactly 10 digits.';
+    if (!form.password) e.password = 'Password is required.';
+    else if (form.password.length < 8) e.password = 'At least 8 characters.';
+    if (!form.confirmPassword) e.confirmPassword = 'Please confirm your password.';
+    else if (form.confirmPassword !== form.password) e.confirmPassword = 'Passwords do not match.';
+    return e;
+  };
+
+  const validateDetails = (): FormErrors => {
+    const e: FormErrors = {};
+    if (role === 'hunter') {
+      if (!form.headline.trim()) e.headline = 'Headline is required.';
+    } else {
+      if (!form.position.trim()) e.position = 'Your title is required.';
+    }
+    return e;
+  };
+
+  const validateProfile = (): FormErrors => {
+    const e: FormErrors = {};
+    if (role === 'hunter') {
+      if (!form.skills.trim()) e.skills = 'Please enter at least one skill.';
+    } else {
+      if (!form.company.trim()) e.company = 'Company name is required.';
+      if (!form.companyTag.trim()) e.companyTag = 'Tag is required.';
+    }
+    return e;
+  };
+
+  const advance = (next: number) => {
+    let errs: FormErrors = {};
+    if (step === 1) errs = validateAccount();
+    else if (step === 2) errs = validateDetails();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setErrors({});
+    setStep(next);
   };
 
   const finish = () => {
+    const errs = validateProfile();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    const fullName = `${form.firstName} ${form.lastName}`;
     const profile = role === 'hunter'
       ? {
-          name: form.name || 'Proudmorakod T.',
-          email: form.email || 'me@ise.example',
-          cohort: form.cohort,
-          track: form.track,
-          headline: form.headline || 'ICE student · open to off-cycle internships',
+          name: fullName, firstName: form.firstName, lastName: form.lastName,
+          email: form.email, studentId: form.studentId,
+          cohort: form.cohort, track: form.track, headline: form.headline,
           skills: form.skills.split(',').map(s => s.trim()).filter(Boolean),
         }
       : {
-          name: form.name || 'Anong K.',
-          email: form.email || 'me@ise.example',
-          company: form.company || 'Linewell Robotics',
-          companyTag: form.companyTag || 'Bangkok · Hardware/AI',
-          isAlumni: form.isAlumni,
-          alumniCohort: form.alumniCohort,
-          position: form.position || 'Engineering Lead',
+          name: fullName, firstName: form.firstName, lastName: form.lastName,
+          email: form.email, studentId: form.studentId,
+          company: form.company, companyTag: form.companyTag,
+          isAlumni: form.isAlumni, alumniCohort: form.alumniCohort,
+          position: form.position,
         };
-
+    registerUser(form.email);
     setUser({ role, profile });
     toast('Welcome to ISE Connect.');
+  };
+
+  const signIn = () => {
+    const e: FormErrors = {};
+    if (!form.email.trim()) e.email = 'Email is required.';
+    if (!form.password.trim()) e.password = 'Password is required.';
+    if (!e.email && !isEmailRegistered(form.email)) {
+      e.email = 'No account found with this email. Please sign up first.';
+    }
+    if (Object.keys(e).length > 0) { setErrors(e); return; }
+    setUser({ role: 'hunter', profile: { name: 'User', email: form.email } });
+    toast('Welcome back.');
   };
 
   if (mode === 'signin') {
@@ -75,24 +156,26 @@ export default function AuthScreen() {
             <Text style={s.heading}>Welcome back.</Text>
             <Text style={s.subheading}>Pick up where you left off.</Text>
             <View style={s.fields}>
-              <TextField label="Email" icon="mail" keyboardType="email-address" placeholder="you@chula.ise" value={form.email} onChangeText={v => upd('email', v)} />
-              <TextField label="Password" icon="lock" secureTextEntry placeholder="••••••••" value={form.password} onChangeText={v => upd('password', v)} />
+              <TextField
+                label="Email *" icon="mail" keyboardType="email-address"
+                placeholder="you@student.chula.ac.th"
+                value={form.email} onChangeText={v => upd('email', v)}
+                error={errors.email}
+              />
+              <TextField
+                label="Password *" icon="lock" secureTextEntry
+                placeholder="••••••••"
+                value={form.password} onChangeText={v => upd('password', v)}
+                error={errors.password}
+              />
             </View>
-            <View style={s.roleToggle}>
-              <TouchableOpacity style={[s.roleBtn, role === 'hunter' && s.roleBtnActive]} onPress={() => setRole('hunter')}>
-                <Text style={[s.roleBtnText, role === 'hunter' && s.roleBtnTextActive]}>Job Hunter</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[s.roleBtn, role === 'recruiter' && s.roleBtnActive]} onPress={() => setRole('recruiter')}>
-                <Text style={[s.roleBtnText, role === 'recruiter' && s.roleBtnTextActive]}>Recruiter</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={s.primaryBtn} onPress={finish}>
+            <TouchableOpacity style={s.primaryBtn} onPress={signIn}>
               <Text style={s.primaryBtnText}>Sign in</Text>
               <Icon name="arrow-right" size={16} color={C.paper} />
             </TouchableOpacity>
             <View style={s.switchRow}>
               <Text style={s.switchText}>New to ISE Connect? </Text>
-              <TouchableOpacity onPress={() => { setMode('signup'); setStep(0); }}>
+              <TouchableOpacity onPress={() => { setMode('signup'); setStep(0); setErrors({}); }}>
                 <Text style={s.switchLink}>Create account</Text>
               </TouchableOpacity>
             </View>
@@ -111,17 +194,17 @@ export default function AuthScreen() {
             <Text style={s.logoText}>ISE Connect</Text>
           </View>
           <View style={s.stepperWrap}>
-            <Stepper steps={stepsByRole[role]} current={step} />
+            <Stepper steps={stepLabels[role]} current={step} />
           </View>
 
+          {/* Step 0 — Role selection */}
           {step === 0 && (
             <>
-              <Text style={s.heading}>Create your account.</Text>
-              <Text style={s.subheading}>Use your university email for faster verification.</Text>
-              <View style={s.fields}>
-                <TextField label="Full name" icon="user" placeholder="e.g. Proudmorakod T." value={form.name} onChangeText={v => upd('name', v)} />
-                <TextField label="Email" icon="mail" keyboardType="email-address" placeholder="you@chula.ise" value={form.email} onChangeText={v => upd('email', v)} />
-                <TextField label="Password" icon="lock" secureTextEntry placeholder="At least 8 characters" value={form.password} onChangeText={v => upd('password', v)} hint="Mix letters, numbers, and one symbol." />
+              <Text style={s.heading}>How will you use ISE Connect?</Text>
+              <Text style={s.subheading}>Choose your role to get started. You can add another later.</Text>
+              <View style={s.roleCards}>
+                <RoleCard value="hunter" current={role} onPick={setRole} icon="compass" title="Job Hunter" sub="Student, recent grad, or anyone looking." bullets={['Browse off-cycle & research roles', 'Apply with your portfolio', 'Read anonymous workplace reviews']} />
+                <RoleCard value="recruiter" current={role} onPick={setRole} icon="briefcase" title="Recruiter" sub="Employer, professor, or project lead." bullets={['Post roles to the ISE community', 'Filter candidates by skill & cohort', 'Manage applicants in one inbox']} />
               </View>
               <TouchableOpacity style={s.primaryBtn} onPress={() => setStep(1)}>
                 <Text style={s.primaryBtnText}>Continue</Text>
@@ -136,20 +219,31 @@ export default function AuthScreen() {
             </>
           )}
 
+          {/* Step 1 — Account details */}
           {step === 1 && (
             <>
-              <Text style={s.heading}>How will you use ISE Connect?</Text>
-              <Text style={s.subheading}>You can add the other role later from settings.</Text>
-              <View style={s.roleCards}>
-                <RoleCard value="hunter" current={role} onPick={setRole} icon="compass" title="Job Hunter" sub="Student, recent grad, or anyone looking." bullets={['Browse off-cycle & research roles', 'One-click apply with your portfolio', 'Read anonymous workplace reviews']} />
-                <RoleCard value="recruiter" current={role} onPick={setRole} icon="briefcase" title="Recruiter" sub="Employer, professor, or project lead." bullets={['Post roles to the ISE community', 'Filter candidates by skill & cohort', 'Manage applicants in one inbox']} />
+              <Text style={s.heading}>Create your account.</Text>
+              <Text style={s.subheading}>All fields are required. Use your university email.</Text>
+              <View style={s.fields}>
+                <View style={s.nameRow}>
+                  <View style={s.nameField}>
+                    <TextField label="First name *" icon="user" placeholder="e.g. Proudmorakod" value={form.firstName} onChangeText={v => upd('firstName', v)} error={errors.firstName} />
+                  </View>
+                  <View style={s.nameField}>
+                    <TextField label="Last name *" placeholder="e.g. Tanaka" value={form.lastName} onChangeText={v => upd('lastName', v)} error={errors.lastName} />
+                  </View>
+                </View>
+                <TextField label="Email *" icon="mail" keyboardType="email-address" placeholder="you@student.chula.ac.th" value={form.email} onChangeText={v => upd('email', v)} error={errors.email} hint="@gmail.com · @student.chula.ac.th · @alumni.chula.ac.th" />
+                <TextField label="Student ID *" icon="id-card" keyboardType="numeric" placeholder="10-digit number" value={form.studentId} onChangeText={v => upd('studentId', v)} error={errors.studentId} />
+                <TextField label="Password *" icon="lock" secureTextEntry placeholder="At least 8 characters" value={form.password} onChangeText={v => upd('password', v)} error={errors.password} />
+                <TextField label="Confirm password *" icon="lock" secureTextEntry placeholder="Re-enter your password" value={form.confirmPassword} onChangeText={v => upd('confirmPassword', v)} error={errors.confirmPassword} />
               </View>
               <View style={s.navRow}>
                 <TouchableOpacity style={s.ghostBtn} onPress={() => setStep(0)}>
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={s.primaryBtn} onPress={() => setStep(2)}>
+                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={() => advance(2)}>
                   <Text style={s.primaryBtnText}>Continue</Text>
                   <Icon name="arrow-right" size={16} color={C.paper} />
                 </TouchableOpacity>
@@ -157,6 +251,7 @@ export default function AuthScreen() {
             </>
           )}
 
+          {/* Step 2 — Role-specific details */}
           {step === 2 && (
             <>
               <Text style={s.heading}>Tell us about you.</Text>
@@ -164,20 +259,20 @@ export default function AuthScreen() {
               <View style={s.fields}>
                 {role === 'hunter' ? (
                   <>
-                    <SelectField label="Cohort tag" value={form.cohort} onChange={v => upd('cohort', v)} options={COHORT_OPTIONS} />
-                    <SelectField label="Track" value={form.track} onChange={v => upd('track', v)} options={TRACK_OPTIONS} />
-                    <TextField label="Headline" placeholder="e.g. Looking for ML internships, summer 2026" value={form.headline} onChangeText={v => upd('headline', v)} />
+                    <SelectField label="Cohort tag *" value={form.cohort} onChange={v => upd('cohort', v)} options={COHORT_OPTIONS} />
+                    <SelectField label="Track *" value={form.track} onChange={v => upd('track', v)} options={TRACK_OPTIONS} />
+                    <TextField label="Headline *" placeholder="e.g. Looking for ML internships, summer 2026" value={form.headline} onChangeText={v => upd('headline', v)} error={errors.headline} />
                   </>
                 ) : (
                   <>
-                    <TextField label="Your title" placeholder="e.g. Engineering Lead" value={form.position} onChangeText={v => upd('position', v)} />
+                    <TextField label="Your title *" placeholder="e.g. Engineering Lead" value={form.position} onChangeText={v => upd('position', v)} error={errors.position} />
                     <SelectField
-                      label="ISE alumni?"
+                      label="ISE alumni? *"
                       value={form.isAlumni ? 'y' : 'n'}
                       onChange={v => upd('isAlumni', v === 'y')}
                       options={[{ value: 'y', label: 'Yes — I am an alum' }, { value: 'n', label: 'No' }]}
                     />
-                    {form.isAlumni && <SelectField label="Alumni cohort" value={form.alumniCohort} onChange={v => upd('alumniCohort', v)} options={ALUMNI_OPTIONS} />}
+                    {form.isAlumni && <SelectField label="Alumni cohort *" value={form.alumniCohort} onChange={v => upd('alumniCohort', v)} options={ALUMNI_OPTIONS} />}
                   </>
                 )}
               </View>
@@ -186,7 +281,7 @@ export default function AuthScreen() {
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={s.primaryBtn} onPress={() => setStep(3)}>
+                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={() => advance(3)}>
                   <Text style={s.primaryBtnText}>Continue</Text>
                   <Icon name="arrow-right" size={16} color={C.paper} />
                 </TouchableOpacity>
@@ -194,12 +289,19 @@ export default function AuthScreen() {
             </>
           )}
 
+          {/* Step 3 — Hunter: skills */}
           {step === 3 && role === 'hunter' && (
             <>
               <Text style={s.heading}>Build a starter profile.</Text>
-              <Text style={s.subheading}>Add a few skills so recruiters and the board can match you.</Text>
+              <Text style={s.subheading}>Add your top skills so recruiters and the board can match you.</Text>
               <View style={s.fields}>
-                <TextField label="Top skills (comma separated)" placeholder="Python, React, OpenCV…" value={form.skills} onChangeText={v => upd('skills', v)} />
+                <TextField
+                  label="Top skills * (comma separated)"
+                  placeholder="Python, React, OpenCV…"
+                  value={form.skills}
+                  onChangeText={v => upd('skills', v)}
+                  error={errors.skills}
+                />
                 <View style={s.uploadBox}>
                   <Icon name="upload" size={18} color={C.muted} />
                   <Text style={s.uploadText}>Drop a PDF or tap to upload resume (optional)</Text>
@@ -210,7 +312,7 @@ export default function AuthScreen() {
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={s.primaryBtn} onPress={finish}>
+                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
                   <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
                   <Icon name="arrow-right" size={16} color={C.paper} />
                 </TouchableOpacity>
@@ -218,20 +320,21 @@ export default function AuthScreen() {
             </>
           )}
 
+          {/* Step 3 — Recruiter: company */}
           {step === 3 && role === 'recruiter' && (
             <>
               <Text style={s.heading}>Tell us about your team.</Text>
               <Text style={s.subheading}>This appears beside every role you post. Verified within 24h.</Text>
               <View style={s.fields}>
-                <TextField label="Company / lab name" placeholder="e.g. Linewell Robotics" value={form.company} onChangeText={v => upd('company', v)} />
-                <TextField label="Tag (location · industry)" placeholder="e.g. Bangkok · Hardware/AI" value={form.companyTag} onChangeText={v => upd('companyTag', v)} />
+                <TextField label="Company / lab name *" placeholder="e.g. Linewell Robotics" value={form.company} onChangeText={v => upd('company', v)} error={errors.company} />
+                <TextField label="Tag (location · industry) *" placeholder="e.g. Bangkok · Hardware/AI" value={form.companyTag} onChangeText={v => upd('companyTag', v)} error={errors.companyTag} />
               </View>
               <View style={s.navRow}>
                 <TouchableOpacity style={s.ghostBtn} onPress={() => setStep(2)}>
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={s.primaryBtn} onPress={finish}>
+                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
                   <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
                   <Icon name="arrow-right" size={16} color={C.paper} />
                 </TouchableOpacity>
@@ -255,16 +358,14 @@ const s = StyleSheet.create({
   subheading: { fontSize: 14, color: C.muted, marginBottom: 20, lineHeight: 20 },
   fields: { gap: 12, marginBottom: 20 },
   roleCards: { gap: 12, marginBottom: 20 },
-  navRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
-  primaryBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: C.teal600, paddingVertical: 12, borderRadius: 12 },
+  nameRow: { flexDirection: 'row', gap: 10 },
+  nameField: { flex: 1 },
+  navRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  flex1: { flex: 1 },
+  primaryBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: C.teal600, paddingVertical: 12, borderRadius: 12 },
   primaryBtnText: { fontSize: 15, fontWeight: '500', color: C.paper },
   ghostBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: C.line },
   ghostBtnText: { fontSize: 15, color: C.ink },
-  roleToggle: { flexDirection: 'row', backgroundColor: C.paper2, borderRadius: 10, padding: 3, marginBottom: 16 },
-  roleBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
-  roleBtnActive: { backgroundColor: C.paper },
-  roleBtnText: { fontSize: 13, color: C.muted },
-  roleBtnTextActive: { color: C.ink },
   switchRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   switchText: { fontSize: 13, color: C.muted },
   switchLink: { fontSize: 13, color: C.ink, textDecorationLine: 'underline' },

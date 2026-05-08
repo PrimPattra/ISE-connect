@@ -29,7 +29,6 @@ export default function BoardScreen() {
   }), [jobs, q, type, loc]);
 
   const toggleSave = (id: string) => setJobs(js => js.map(j => j.id === id ? { ...j, saved: !j.saved } : j));
-  const apply = (j: Job) => { setOpen(null); toast(`Applied to ${j.title} at ${j.company}.`); };
 
   return (
     <SafeAreaView style={s.safe}>
@@ -87,7 +86,7 @@ export default function BoardScreen() {
         )}
       </ScrollView>
 
-      <JobDetailModal job={open} onClose={() => setOpen(null)} onApply={apply} />
+      <JobDetailModal job={open} onClose={() => setOpen(null)} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );

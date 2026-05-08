@@ -57,10 +57,11 @@ export default function RecruiterScreen() {
       location: d.location,
       comp: d.comp || 'Negotiable',
       posted: 'just now',
-      skills: d.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
+      skills: Array.isArray(d.skills) ? d.skills : d.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
       poster: { name: user!.profile.name, tag: user!.profile.isAlumni ? user!.profile.alumniCohort : 'Employer', role: user!.profile.position },
       blurb: d.blurb || 'Ask the recruiter for the full description.',
-      cycle: d.cycle,
+      period: d.period || '',
+      applicationLink: d.applicationLink || '',
       saved: false,
     };
     setJobs(js => [newJob as any, ...js]);
@@ -162,8 +163,8 @@ export default function RecruiterScreen() {
         open={openPost}
         onClose={() => setOpenPost(false)}
         onPost={post}
-        recruiterCompany={user.profile.company}
-        recruiterCompanyTag={user.profile.companyTag}
+        recruiterCompany={user.profile.company ?? ''}
+        recruiterCompanyTag={user.profile.companyTag ?? ''}
       />
       <ApplicantDetailModal a={openA} onClose={() => setOpenA(null)} onMove={move} />
       <Toast msg={toastMsg} />

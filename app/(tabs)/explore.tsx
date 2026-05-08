@@ -38,9 +38,7 @@ export default function ReviewsScreen() {
       id: 'r' + (reviews.length + 1),
       company: d.company || 'Unnamed company',
       role: d.role || '—',
-      overall: (d.culture + d.wlb + d.mentorship) / 3,
-      culture: d.culture, wlb: d.wlb, mentorship: d.mentorship,
-      pros: d.pros || '—', cons: d.cons || '—',
+      reviewText: d.reviewText || '—',
       salary: d.includeSalary && d.amount
         ? { amount: parseInt(d.amount, 10) || 0, currency: d.currency, period: d.period, role: d.salaryRole || d.role || '—' }
         : null,

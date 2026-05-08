@@ -14,7 +14,8 @@ export interface Job {
   skills: string[];
   poster: { name: string; tag: string; role: string };
   blurb: string;
-  cycle: string;
+  period: string;
+  applicationLink: string;
   saved: boolean;
 }
 
@@ -29,12 +30,7 @@ export interface Review {
   id: string;
   company: string;
   role: string;
-  overall: number;
-  culture: number;
-  wlb: number;
-  mentorship: number;
-  pros: string;
-  cons: string;
+  reviewText: string;
   salary: Salary | null;
   when: string;
   by: string;
@@ -77,7 +73,9 @@ export interface Project {
   by: { name: string; tag: string };
   collaborators: { name: string; tag: string }[];
   skills: string[];
-  summary: string;
+  description: string;
+  projectLink: string;
+  contactInfo: string;
   media: MediaItem[];
   likes: number;
   views: number;
@@ -105,6 +103,9 @@ export interface RecruiterProfile {
 export interface UserProfile {
   name: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
+  studentId?: string;
   // hunter fields
   cohort?: string;
   track?: string;
