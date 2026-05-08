@@ -1,112 +1,118 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ReviewCard } from '@/components/reviews/review-card';
+import { InterviewCard } from '@/components/reviews/interview-card';
+import { ResourceCard } from '@/components/reviews/resource-card';
+import { QACard } from '@/components/reviews/qa-card';
+import { SalarySection } from '@/components/reviews/salary-section';
+import { WriteReviewModal } from '@/components/reviews/write-review-modal';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Toast } from '@/components/ui/toast';
+import { Card } from '@/components/ui/card';
+import { Icon } from '@/components/icon';
+import { useAppContext } from '@/context/app-context';
+import { SEED_INTERVIEWS, SEED_RESOURCES, SEED_QA } from '@/data/seed';
+import { C, F } from '@/constants/theme';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 
-export default function TabTwoScreen() {
+const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'reviews', label: 'Reviews', icon: 'star' },
+  { id: 'interviews', label: 'Interviews', icon: 'chat' },
+  { id: 'resources', label: 'Resources', icon: 'doc' },
+  { id: 'qa', label: 'Q&A', icon: 'users' },
+];
+
+export default function ReviewsScreen() {
+  const { reviews, setReviews, toastMsg, toast } = useAppContext();
+  const [tab, setTab] = useState<Tab>('reviews');
+  const [showSalaries, setShowSalaries] = useState(false);
+  const [q, setQ] = useState('');
+  const [openWrite, setOpenWrite] = useState(false);
+
+  const filtered = reviews.filter(r => !q || `${r.company} ${r.role}`.toLowerCase().includes(q.toLowerCase()));
+
+  const submit = (d: any) => {
+    const newR = {
+      id: 'r' + (reviews.length + 1),
+      company: d.company || 'Unnamed company',
+      role: d.role || '—',
+      overall: (d.culture + d.wlb + d.mentorship) / 3,
+      culture: d.culture, wlb: d.wlb, mentorship: d.mentorship,
+      pros: d.pros || '—', cons: d.cons || '—',
+      salary: d.includeSalary && d.amount
+        ? { amount: parseInt(d.amount, 10) || 0, currency: d.currency, period: d.period, role: d.salaryRole || d.role || '—' }
+        : null,
+      when: '2026 · Just now',
+      by: 'Anonymous · You',
+    };
+    setReviews(rs => [newR, ...rs]);
+    setOpenWrite(false);
+    toast('Review posted anonymously.');
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={s.safe}>
+      <ScrollView contentContainerStyle={s.scroll}>
+        <SectionHeading kicker="02 · Workplace Reviews & Career Tips" title="What it's actually like inside.">
+          <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
+            <Icon name="plus" size={15} color={C.paper} />
+          </TouchableOpacity>
+        </SectionHeading>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabScroll}>
+          <View style={s.tabRow}>
+            {TABS.map(t => (
+              <TouchableOpacity key={t.id} style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
+                <Icon name={t.icon} size={14} color={tab === t.id ? C.paper : C.ink2} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+
+        {tab === 'reviews' && (
+          <>
+            <Card style={s.searchCard}>
+              <View style={s.searchRow}>
+                <Icon name="search" size={16} color={C.muted} />
+                <TextInput style={s.searchInput} placeholder="Search company or role" placeholderTextColor={C.muted} value={q} onChangeText={setQ} />
+              </View>
+            </Card>
+            <TouchableOpacity style={s.salaryToggle} onPress={() => setShowSalaries(v => !v)}>
+              <View style={[s.checkbox, showSalaries && s.checkboxActive]}>
+                {showSalaries && <Icon name="check" size={12} color={C.paper} />}
+              </View>
+            </TouchableOpacity>
+            {showSalaries && <SalarySection reviews={reviews} />}
+            {filtered.map(r => <ReviewCard key={r.id} r={r} showSalary={showSalaries} />)}
+            {filtered.length === 0 && <EmptyState icon="star" title="No reviews match." body="Try a different company name." />}
+          </>
+        )}
+
+        {tab === 'interviews' && SEED_INTERVIEWS.map(i => <InterviewCard key={i.id} i={i} />)}
+        {tab === 'resources' && SEED_RESOURCES.map(r => <ResourceCard key={r.id} res={r} />)}
+        {tab === 'qa' && SEED_QA.map(q => <QACard key={q.id} q={q} />)}
+      </ScrollView>
+
+      <WriteReviewModal open={openWrite} onClose={() => setOpenWrite(false)} onSubmit={submit} />
+      <Toast msg={toastMsg} />
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.paper },
+  scroll: { padding: 16, paddingBottom: 32 },
+  writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
+  tabScroll: { marginBottom: 14 },
+  tabRow: { flexDirection: 'row', gap: 8 },
+  tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
+  tabBtnActive: { backgroundColor: C.ink, borderColor: C.ink },
+  searchCard: { padding: 10, marginBottom: 10 },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  searchInput: { flex: 1, fontSize: 14, color: C.ink },
+  salaryToggle: { marginBottom: 12 },
+  checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper, alignItems: 'center', justifyContent: 'center' },
+  checkboxActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
 });

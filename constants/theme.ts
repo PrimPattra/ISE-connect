@@ -1,53 +1,68 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+export const C = {
+  paper: '#F4F0E8',
+  paper2: '#EBE5D8',
+  ink: '#1B1A17',
+  ink2: '#3A3833',
+  muted: '#7A7568',
+  line: '#D9D2C2',
+  teal50: '#E6EEEC',
+  teal100: '#C7D9D5',
+  teal500: '#1F574E',
+  teal600: '#173F39',
+  teal700: '#0E2A26',
+  ember: '#C2552B',
+  plum: '#5B3A6B',
+  moss: '#5C6E3A',
+  white: '#FFFFFF',
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+export const F = {
+  serif: Platform.select({ ios: 'Georgia', default: 'serif' }) as string,
+  mono: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string,
+  sans: Platform.select({ ios: 'System', default: 'normal' }) as string,
+};
+
+export const Shadow = {
+  card: Platform.select({
+    ios: {
+      shadowColor: C.ink,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+    },
+    android: { elevation: 2 },
+    default: {},
+  }),
+  pop: Platform.select({
+    ios: {
+      shadowColor: C.ink,
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.18,
+      shadowRadius: 20,
+    },
+    android: { elevation: 8 },
+    default: {},
+  }),
+};
+
+// Kept for compatibility with existing components that import Colors
+export const Colors = {
+  light: {
+    text: C.ink,
+    background: C.paper,
+    tint: C.teal500,
+    icon: C.muted,
+    tabIconDefault: C.muted,
+    tabIconSelected: C.teal500,
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+  dark: {
+    text: C.paper,
+    background: C.ink,
+    tint: C.teal100,
+    icon: C.muted,
+    tabIconDefault: C.muted,
+    tabIconSelected: C.teal100,
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+};
