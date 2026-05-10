@@ -4,6 +4,7 @@ import { Stepper } from '@/components/auth/stepper';
 import { RoleCard } from '@/components/auth/role-card';
 import { TextField } from '@/components/ui/text-field';
 import { SelectField } from '@/components/ui/select-field';
+import { Modal } from '@/components/ui/modal';
 import { Icon } from '@/components/icon';
 import { useAppContext } from '@/context/app-context';
 import { C, F } from '@/constants/theme';
@@ -49,6 +50,7 @@ export default function AuthScreen() {
     company: '', position: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const upd = (k: keyof FormState, v: FormState[typeof k]) => {
     setForm(f => ({ ...f, [k]: v }));
@@ -56,7 +58,7 @@ export default function AuthScreen() {
   };
 
   const stepLabels = {
-    hunter: ['Role', 'Account', 'About you', 'Skills'],
+    hunter: ['Role', 'Account', 'About you'],
     recruiter: ['Role', 'Account', 'About you'],
   };
 
@@ -81,9 +83,7 @@ export default function AuthScreen() {
 
   const validateProfile = (): FormErrors => {
     const e: FormErrors = {};
-    if (role === 'hunter') {
-      if (!form.skills.trim()) e.skills = 'Please enter at least one skill.';
-    } else {
+    if (role === 'recruiter') {
       if (!form.position.trim()) e.position = 'Your title is required.';
       if (!form.company.trim()) e.company = 'Company name is required.';
     }
@@ -121,6 +121,12 @@ export default function AuthScreen() {
     registerUser(form.email);
     setUser({ role, profile });
     toast('Welcome to ISE Connect.');
+  };
+
+  const tryFinish = () => {
+    const errs = validateProfile();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setShowConfirm(true);
   };
 
   const signIn = () => {
@@ -265,45 +271,7 @@ export default function AuthScreen() {
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                {role === 'hunter' ? (
-                  <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={() => advance(3)}>
-                    <Text style={s.primaryBtnText}>Continue</Text>
-                    <Icon name="arrow-right" size={16} color={C.paper} />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
-                    <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
-                    <Icon name="arrow-right" size={16} color={C.paper} />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </>
-          )}
-
-          {/* Step 3 — Hunter: skills */}
-          {step === 3 && role === 'hunter' && (
-            <>
-              <Text style={s.heading}>Build a starter profile.</Text>
-              <Text style={s.subheading}>Add your top skills so recruiters and the board can match you.</Text>
-              <View style={s.fields}>
-                <TextField
-                  label="Top skills * (comma separated)"
-                  placeholder="Python, React, OpenCV…"
-                  value={form.skills}
-                  onChangeText={v => upd('skills', v)}
-                  error={errors.skills}
-                />
-                <View style={s.uploadBox}>
-                  <Icon name="upload" size={18} color={C.muted} />
-                  <Text style={s.uploadText}>Drop a PDF or tap to upload resume (optional)</Text>
-                </View>
-              </View>
-              <View style={s.navRow}>
-                <TouchableOpacity style={s.ghostBtn} onPress={() => setStep(2)}>
-                  <Icon name="arrow-left" size={16} color={C.ink} />
-                  <Text style={s.ghostBtnText}>Back</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
+                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={tryFinish}>
                   <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
                   <Icon name="arrow-right" size={16} color={C.paper} />
                 </TouchableOpacity>
@@ -311,9 +279,57 @@ export default function AuthScreen() {
             </>
           )}
 
+          {/* Step 3 — Hunter: skills */}
+
 
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        open={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        title="Almost there!"
+        footer={
+          <>
+            <TouchableOpacity style={[cf.btn, cf.ghost]} onPress={() => setShowConfirm(false)}>
+              <Text style={cf.ghostText}>Go back & edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[cf.btn, cf.primary]} onPress={finish}>
+              <Text style={cf.primaryText}>Confirm & enter</Text>
+              <Icon name="check" size={15} color={C.paper} />
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <Text style={cf.section}>Review your details</Text>
+        {([
+          ['Name', `${form.firstName} ${form.lastName}`],
+          ['Email', form.email],
+          ['Student ID', form.studentId],
+          ['Major', form.major],
+          ['Batch', `#${form.batchNo}`],
+          ['Tag', `${form.major}#${form.batchNo}`],
+        ] as [string, string][]).map(([k, v]) => (
+          <View key={k} style={cf.row}>
+            <Text style={cf.key}>{k}</Text>
+            <Text style={cf.val}>{v}</Text>
+          </View>
+        ))}
+        {role === 'recruiter' && (
+          <>
+            <View style={cf.divider} />
+            {([
+              ['Title', form.position],
+              ['Company', form.company],
+            ] as [string, string][]).map(([k, v]) => (
+              <View key={k} style={cf.row}>
+                <Text style={cf.key}>{k}</Text>
+                <Text style={cf.val}>{v}</Text>
+              </View>
+            ))}
+          </>
+        )}
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -340,9 +356,20 @@ const s = StyleSheet.create({
   switchRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   switchText: { fontSize: 13, color: C.muted },
   switchLink: { fontSize: 13, color: C.ink, textDecorationLine: 'underline' },
-  uploadBox: { borderWidth: 1, borderStyle: 'dashed', borderColor: C.line, borderRadius: 10, padding: 20, alignItems: 'center', gap: 8 },
-  uploadText: { fontSize: 13, color: C.muted, textAlign: 'center' },
   tagPreview: { fontSize: 13, color: C.muted, marginTop: 4 },
   tagPreviewBold: { color: C.teal600, fontFamily: F.mono },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
+});
+
+const cf = StyleSheet.create({
+  section: { fontSize: 12, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: C.line },
+  key: { fontSize: 13, color: C.muted, width: 90 },
+  val: { fontSize: 13, color: C.ink, fontFamily: F.mono, flex: 1, textAlign: 'right' },
+  divider: { height: 1, backgroundColor: C.line, marginVertical: 10 },
+  btn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10 },
+  ghost: { borderWidth: 1, borderColor: C.line },
+  ghostText: { fontSize: 14, color: C.ink },
+  primary: { backgroundColor: C.teal600 },
+  primaryText: { fontSize: 14, color: C.paper, fontWeight: '500' },
 });
