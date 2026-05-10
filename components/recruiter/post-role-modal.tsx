@@ -18,6 +18,12 @@ interface PostDraft {
   applicationLink: string; requireCoverLetter: boolean; requirePortfolio: boolean;
 }
 
+const EMPTY_DRAFT: PostDraft = {
+  title: '', type: 'Internship', location: 'On-site · Bangkok',
+  comp: '', period: 'Off-cycle · Jun–Aug', skills: [], blurb: '',
+  applicationLink: '', requireCoverLetter: false, requirePortfolio: false,
+};
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -28,13 +34,16 @@ interface Props {
 
 export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruiterCompanyTag }: Props) {
   const [tab, setTab] = useState<'details' | 'form'>('details');
-  const [d, setD] = useState<PostDraft>({
-    title: '', type: 'Internship', location: 'On-site · Bangkok',
-    comp: '', period: 'Off-cycle · Jun–Aug', skills: [], blurb: '',
-    applicationLink: '', requireCoverLetter: false, requirePortfolio: false,
-  });
+  const [d, setD] = useState<PostDraft>(EMPTY_DRAFT);
   const [customSkill, setCustomSkill] = useState('');
   const [showCustom, setShowCustom] = useState(false);
+
+  const reset = () => {
+    setTab('details');
+    setD(EMPTY_DRAFT);
+    setCustomSkill('');
+    setShowCustom(false);
+  };
 
   const upd = <K extends keyof PostDraft>(k: K, v: PostDraft[K]) => setD(x => ({ ...x, [k]: v }));
 
@@ -69,10 +78,10 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
       title="Post a new role"
       footer={
         <>
-          <TouchableOpacity style={[btn.base, btn.ghost]} onPress={onClose}>
+          <TouchableOpacity style={[btn.base, btn.ghost]} onPress={() => { reset(); onClose(); }}>
             <Text style={btn.ghostText}>Save draft</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[btn.base, btn.primary]} onPress={() => onPost(buildFinalDraft())}>
+          <TouchableOpacity style={[btn.base, btn.primary]} onPress={() => { onPost(buildFinalDraft()); reset(); }}>
             <Text style={btn.primaryText}>Publish to ISE</Text>
             <Icon name="send" size={15} color={C.paper} />
           </TouchableOpacity>
