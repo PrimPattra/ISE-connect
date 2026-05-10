@@ -52,13 +52,13 @@ export default function RecruiterScreen() {
       id: 'jr' + (jobs.length + 1),
       title: d.title || 'Untitled role',
       company: user!.profile.company,
-      companyTag: user!.profile.companyTag,
+      companyTag: user!.profile.cohort || '',
       type: d.type,
       location: d.location,
       comp: d.comp || 'Negotiable',
       posted: 'just now',
       skills: Array.isArray(d.skills) ? d.skills : d.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
-      poster: { name: user!.profile.name, tag: user!.profile.isAlumni ? user!.profile.alumniCohort : 'Employer', role: user!.profile.position },
+      poster: { name: user!.profile.name, tag: user!.profile.cohort || 'Employer', role: user!.profile.position },
       blurb: d.blurb || 'Ask the recruiter for the full description.',
       period: d.period || '',
       applicationLink: d.applicationLink || '',
@@ -120,9 +120,8 @@ export default function RecruiterScreen() {
             <Card style={s.companyCard}>
               <Text style={s.compKicker}>Company</Text>
               <Text style={s.compName}>{user.profile.company}</Text>
-              <Text style={s.compTag}>{user.profile.companyTag}</Text>
               <View style={s.divider} />
-              {[['Posting as', user.profile.name], ['Title', user.profile.position], ['Tag', user.profile.isAlumni ? user.profile.alumniCohort : 'Employer']].map(([k, v]) => (
+              {[['Posting as', user.profile.name], ['Title', user.profile.position], ['Tag', user.profile.cohort || 'Employer']].map(([k, v]) => (
                 <View key={k} style={s.dl}>
                   <Text style={s.dt}>{k}</Text>
                   <Text style={s.dd}>{v}</Text>

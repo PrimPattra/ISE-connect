@@ -15,15 +15,14 @@ interface FormState {
   firstName: string; lastName: string;
   email: string; password: string; confirmPassword: string;
   studentId: string;
-  cohort: string; track: string; headline: string; skills: string;
-  company: string; companyTag: string; isAlumni: boolean; alumniCohort: string; position: string;
+  major: string; batchNo: string; skills: string;
+  company: string; position: string;
 }
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
 
-const COHORT_OPTIONS = ['ICE#19', 'ICE#20', 'ICE#21', 'ICE#22', 'ICE#23', 'Alumni', 'Faculty'].map(v => ({ value: v, label: v }));
-const TRACK_OPTIONS = ['Computer', 'Communication', 'Industrial', 'Other'].map(v => ({ value: v, label: v }));
-const ALUMNI_OPTIONS = ['ICE#08', 'ICE#10', 'ICE#11', 'ICE#13', 'ICE#14', 'ICE#16', 'ICE#18', 'Faculty'].map(v => ({ value: v, label: v }));
+const MAJOR_OPTIONS = ['ICE', 'AI', 'ADME', 'NANO', 'AERO', 'SEMI'].map(v => ({ value: v, label: v }));
+const BATCH_OPTIONS = Array.from({ length: 20 }, (_, i) => ({ value: String(i + 1), label: `#${i + 1}` }));
 
 const ENGLISH_RE = /^[A-Za-z\s'\-.]+$/;
 const STUDENT_ID_RE = /^\d{10}$/;
@@ -46,8 +45,8 @@ export default function AuthScreen() {
   const [form, setForm] = useState<FormState>({
     firstName: '', lastName: '',
     email: '', password: '', confirmPassword: '', studentId: '',
-    cohort: 'ICE#22', track: 'Computer', headline: '', skills: '',
-    company: '', companyTag: '', isAlumni: true, alumniCohort: 'ICE#16', position: '',
+    major: 'ICE', batchNo: '19', skills: '',
+    company: '', position: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -58,7 +57,7 @@ export default function AuthScreen() {
 
   const stepLabels = {
     hunter: ['Role', 'Account', 'About you', 'Skills'],
-    recruiter: ['Role', 'Account', 'About you', 'Company'],
+    recruiter: ['Role', 'Account', 'About you'],
   };
 
   const validateAccount = (): FormErrors => {
@@ -78,23 +77,15 @@ export default function AuthScreen() {
     return e;
   };
 
-  const validateDetails = (): FormErrors => {
-    const e: FormErrors = {};
-    if (role === 'hunter') {
-      if (!form.headline.trim()) e.headline = 'Headline is required.';
-    } else {
-      if (!form.position.trim()) e.position = 'Your title is required.';
-    }
-    return e;
-  };
+  const validateDetails = (): FormErrors => ({});
 
   const validateProfile = (): FormErrors => {
     const e: FormErrors = {};
     if (role === 'hunter') {
       if (!form.skills.trim()) e.skills = 'Please enter at least one skill.';
     } else {
+      if (!form.position.trim()) e.position = 'Your title is required.';
       if (!form.company.trim()) e.company = 'Company name is required.';
-      if (!form.companyTag.trim()) e.companyTag = 'Tag is required.';
     }
     return e;
   };
@@ -112,18 +103,19 @@ export default function AuthScreen() {
     const errs = validateProfile();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     const fullName = `${form.firstName} ${form.lastName}`;
+    const cohort = `${form.major}#${form.batchNo}`;
     const profile = role === 'hunter'
       ? {
           name: fullName, firstName: form.firstName, lastName: form.lastName,
           email: form.email, studentId: form.studentId,
-          cohort: form.cohort, track: form.track, headline: form.headline,
+          cohort,
           skills: form.skills.split(',').map(s => s.trim()).filter(Boolean),
         }
       : {
           name: fullName, firstName: form.firstName, lastName: form.lastName,
           email: form.email, studentId: form.studentId,
-          company: form.company, companyTag: form.companyTag,
-          isAlumni: form.isAlumni, alumniCohort: form.alumniCohort,
+          cohort,
+          company: form.company,
           position: form.position,
         };
     registerUser(form.email);
@@ -251,28 +243,20 @@ export default function AuthScreen() {
             </>
           )}
 
-          {/* Step 2 — Role-specific details */}
+          {/* Step 2 — ISE identity (+ company for recruiters) */}
           {step === 2 && (
             <>
               <Text style={s.heading}>Tell us about you.</Text>
-              <Text style={s.subheading}>{role === 'hunter' ? 'This becomes your community tag and profile headline.' : 'Your community tag tells students how you connect to the program.'}</Text>
+              <Text style={s.subheading}>Pick your ISE major and batch — this becomes your community tag.</Text>
               <View style={s.fields}>
-                {role === 'hunter' ? (
+                <SelectField label="ISE major *" value={form.major} onChange={v => upd('major', v)} options={MAJOR_OPTIONS} />
+                <SelectField label="Batch No. *" value={form.batchNo} onChange={v => upd('batchNo', v)} options={BATCH_OPTIONS} />
+                <Text style={s.tagPreview}>Your tag: <Text style={s.tagPreviewBold}>{form.major}#{form.batchNo}</Text></Text>
+                {role === 'recruiter' && (
                   <>
-                    <SelectField label="Cohort tag *" value={form.cohort} onChange={v => upd('cohort', v)} options={COHORT_OPTIONS} />
-                    <SelectField label="Track *" value={form.track} onChange={v => upd('track', v)} options={TRACK_OPTIONS} />
-                    <TextField label="Headline *" placeholder="e.g. Looking for ML internships, summer 2026" value={form.headline} onChangeText={v => upd('headline', v)} error={errors.headline} />
-                  </>
-                ) : (
-                  <>
+                    <View style={s.divider} />
                     <TextField label="Your title *" placeholder="e.g. Engineering Lead" value={form.position} onChangeText={v => upd('position', v)} error={errors.position} />
-                    <SelectField
-                      label="ISE alumni? *"
-                      value={form.isAlumni ? 'y' : 'n'}
-                      onChange={v => upd('isAlumni', v === 'y')}
-                      options={[{ value: 'y', label: 'Yes — I am an alum' }, { value: 'n', label: 'No' }]}
-                    />
-                    {form.isAlumni && <SelectField label="Alumni cohort *" value={form.alumniCohort} onChange={v => upd('alumniCohort', v)} options={ALUMNI_OPTIONS} />}
+                    <TextField label="Company / lab name *" placeholder="e.g. Linewell Robotics" value={form.company} onChangeText={v => upd('company', v)} error={errors.company} />
                   </>
                 )}
               </View>
@@ -281,10 +265,17 @@ export default function AuthScreen() {
                   <Icon name="arrow-left" size={16} color={C.ink} />
                   <Text style={s.ghostBtnText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={() => advance(3)}>
-                  <Text style={s.primaryBtnText}>Continue</Text>
-                  <Icon name="arrow-right" size={16} color={C.paper} />
-                </TouchableOpacity>
+                {role === 'hunter' ? (
+                  <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={() => advance(3)}>
+                    <Text style={s.primaryBtnText}>Continue</Text>
+                    <Icon name="arrow-right" size={16} color={C.paper} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
+                    <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
+                    <Icon name="arrow-right" size={16} color={C.paper} />
+                  </TouchableOpacity>
+                )}
               </View>
             </>
           )}
@@ -320,27 +311,7 @@ export default function AuthScreen() {
             </>
           )}
 
-          {/* Step 3 — Recruiter: company */}
-          {step === 3 && role === 'recruiter' && (
-            <>
-              <Text style={s.heading}>Tell us about your team.</Text>
-              <Text style={s.subheading}>This appears beside every role you post. Verified within 24h.</Text>
-              <View style={s.fields}>
-                <TextField label="Company / lab name *" placeholder="e.g. Linewell Robotics" value={form.company} onChangeText={v => upd('company', v)} error={errors.company} />
-                <TextField label="Tag (location · industry) *" placeholder="e.g. Bangkok · Hardware/AI" value={form.companyTag} onChangeText={v => upd('companyTag', v)} error={errors.companyTag} />
-              </View>
-              <View style={s.navRow}>
-                <TouchableOpacity style={s.ghostBtn} onPress={() => setStep(2)}>
-                  <Icon name="arrow-left" size={16} color={C.ink} />
-                  <Text style={s.ghostBtnText}>Back</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[s.primaryBtn, s.flex1]} onPress={finish}>
-                  <Text style={s.primaryBtnText}>Enter ISE Connect</Text>
-                  <Icon name="arrow-right" size={16} color={C.paper} />
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -371,4 +342,7 @@ const s = StyleSheet.create({
   switchLink: { fontSize: 13, color: C.ink, textDecorationLine: 'underline' },
   uploadBox: { borderWidth: 1, borderStyle: 'dashed', borderColor: C.line, borderRadius: 10, padding: 20, alignItems: 'center', gap: 8 },
   uploadText: { fontSize: 13, color: C.muted, textAlign: 'center' },
+  tagPreview: { fontSize: 13, color: C.muted, marginTop: 4 },
+  tagPreviewBold: { color: C.teal600, fontFamily: F.mono },
+  divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
 });
