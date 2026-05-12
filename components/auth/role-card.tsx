@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   value: 'hunter' | 'recruiter';
@@ -20,14 +20,16 @@ export function RoleCard({ value, current, onPick, title, sub, bullets, icon }: 
       style={[s.card, active ? s.cardActive : s.cardIdle]}
     >
       <View style={s.top}>
-        <View style={[s.iconWrap, active ? s.iconActive : s.iconIdle]}>
-          <Icon name={icon} size={20} color={active ? C.paper : C.teal600} />
+        <View style={s.headerGroup}>
+          <View style={[s.iconWrap, active ? s.iconActive : s.iconIdle]}>
+            <Icon name={icon} size={20} color={active ? C.paper : C.teal600} />
+          </View>
+          <Text style={[s.title, active && s.titleActive]}>{title}</Text>
         </View>
         <View style={[s.radio, active ? s.radioActive : s.radioIdle]}>
           {active && <Icon name="check" size={12} color={C.teal600} />}
         </View>
       </View>
-      <Text style={[s.title, active && s.titleActive]}>{title}</Text>
       <Text style={[s.sub, active ? s.subActive : s.subIdle]}>{sub}</Text>
       <View style={s.bullets}>
         {bullets.map(b => (
@@ -45,14 +47,15 @@ const s = StyleSheet.create({
   card: { padding: 16, borderRadius: 12, borderWidth: 1 },
   cardActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   cardIdle: { backgroundColor: C.paper, borderColor: C.line },
-  top: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  headerGroup: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconWrap: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   iconActive: { backgroundColor: 'rgba(244,240,232,0.15)' },
-  iconIdle: { backgroundColor: C.paper2 },
+  iconIdle: { backgroundColor: C.teal50 },
   radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   radioActive: { borderColor: C.paper, backgroundColor: C.paper },
   radioIdle: { borderColor: C.line },
-  title: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginBottom: 2 },
+  title: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink },
   titleActive: { color: C.paper },
   sub: { fontSize: 13, marginBottom: 12 },
   subActive: { color: 'rgba(244,240,232,0.8)' },

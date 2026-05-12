@@ -1,13 +1,13 @@
+import { RoleCard } from '@/components/auth/role-card';
+import { Stepper } from '@/components/auth/stepper';
+import { Icon } from '@/components/icon';
+import { Modal } from '@/components/ui/modal';
+import { SelectField } from '@/components/ui/select-field';
+import { TextField } from '@/components/ui/text-field';
+import { C, F } from '@/constants/theme';
+import { useAppContext } from '@/context/app-context';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Stepper } from '@/components/auth/stepper';
-import { RoleCard } from '@/components/auth/role-card';
-import { TextField } from '@/components/ui/text-field';
-import { SelectField } from '@/components/ui/select-field';
-import { Modal } from '@/components/ui/modal';
-import { Icon } from '@/components/icon';
-import { useAppContext } from '@/context/app-context';
-import { C, F } from '@/constants/theme';
 
 type Mode = 'signin' | 'signup';
 type Role = 'hunter' | 'recruiter';
@@ -148,7 +148,7 @@ export default function AuthScreen() {
           <ScrollView contentContainerStyle={s.scrollContent}>
             <View style={s.logoRow}>
               <View style={s.logoIcon}><Icon name="logo" size={18} color={C.paper} /></View>
-              <Text style={s.logoText}>ISE Connect</Text>
+              <Text style={s.logoText}><Text style={{ color: C.red}}>ISE</Text> Connect</Text>
             </View>
             <Stepper steps={['Sign in']} current={0} />
             <Text style={s.heading}>Welcome back.</Text>
@@ -189,7 +189,7 @@ export default function AuthScreen() {
         <ScrollView contentContainerStyle={s.scrollContent}>
           <View style={s.logoRow}>
             <View style={s.logoIcon}><Icon name="logo" size={18} color={C.paper} /></View>
-            <Text style={s.logoText}>ISE Connect</Text>
+            <Text style={s.logoText}><Text style={{color: C.red}}>ISE</Text> Connect</Text>
           </View>
           <View style={s.stepperWrap}>
             <Stepper steps={stepLabels[role]} current={step} />
