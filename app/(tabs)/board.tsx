@@ -1,15 +1,15 @@
-import { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { JobCard } from '@/components/board/job-card';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
-import { SectionHeading } from '@/components/ui/section-heading';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Toast } from '@/components/ui/toast';
-import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
-import { useAppContext } from '@/context/app-context';
+import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { Toast } from '@/components/ui/toast';
 import { C, F } from '@/constants/theme';
+import { useAppContext } from '@/context/app-context';
 import type { Job } from '@/types';
+import { useMemo, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const TYPES = ['All', 'Full-time', 'Internship', 'Freelance', 'Research'];
 const LOCS = ['All', 'Remote', 'Hybrid', 'On-site'];
@@ -106,7 +106,7 @@ const s = StyleSheet.create({
   filterRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingBottom: 4 },
   filterLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
   chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
-  chipActive: { backgroundColor: C.ink, borderColor: C.ink },
+  chipActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   chipText: { fontSize: 12, color: C.ink2 },
   chipTextActive: { color: C.paper },
   clearBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: C.line },
