@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 export const C = {
   paper: '#fbfbfb',
-  paper2: '#fbfbfb', //EBE5D8
+  paper2: '#F5F7FA', //EBE5D8
   ink: '#1B1A17',
   ink2: '#3A3833',
   muted: '#7A7568',
