@@ -27,7 +27,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="board"
         options={{
           title: 'Board',
           tabBarIcon: ({ color, size }) => <Ionicons name="list-outline" size={size} color={color} />,
