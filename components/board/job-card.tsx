@@ -1,9 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from '@/components/icon';
 import { Card } from '@/components/ui/card';
 import { TagPill } from '@/components/ui/tag-pill';
-import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Job } from '@/types';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   job: Job;
@@ -64,7 +64,7 @@ const s = StyleSheet.create({
   blurb: { fontSize: 13, color: C.muted, marginTop: 6, lineHeight: 18 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
   saveBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line, alignSelf: 'flex-start' },
-  saveBtnActive: { backgroundColor: C.ink, borderColor: C.ink },
+  saveBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
@@ -73,6 +73,6 @@ const s = StyleSheet.create({
 });
 
 const chip = StyleSheet.create({
-  wrap: { backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
-  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
+  wrap: { backgroundColor: C.teal50, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2, fontWeight: 'bold' },
 });

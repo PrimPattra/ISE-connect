@@ -2,14 +2,14 @@ import { Platform } from 'react-native';
 
 export const C = {
   paper: '#fbfbfb',
-  paper2: '#EBE5D8', //EBE5D8
+  paper2: '#fbfbfb', //EBE5D8
   ink: '#1B1A17',
   ink2: '#3A3833',
   muted: '#7A7568',
   line: '#D9D2C2',
   teal50: '#E3F2FD',
   teal100: '#BBDEFB',
-  teal500: '#0D47A1',
+  teal500: '#1976D2',
   teal600: '#0D47A1',
   teal700: '#082552',
   blue50: '#E3F2FD',

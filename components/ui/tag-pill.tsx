@@ -22,9 +22,9 @@ const s = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
   },
-  light: { backgroundColor: C.paper2, borderColor: C.line },
+  light: { backgroundColor: C.teal50, borderColor: C.line },
   dark: { backgroundColor: C.ink, borderColor: C.ink },
-  text: { fontSize: 11, fontFamily: F.mono },
+  text: { fontSize: 11, fontFamily: F.mono, fontWeight: 'bold' },
   textLight: { color: C.ink2 },
   textDark: { color: C.paper },
 });
