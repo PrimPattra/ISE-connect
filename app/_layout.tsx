@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -8,15 +8,21 @@ function RootLayoutContent() {
   const { user } = useAppContext();
   const segments = useSegments();
   const router = useRouter();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
     const inAuthGroup = segments[0] === '(auth)';
     if (!user && !inAuthGroup) {
       router.replace('/(auth)');
     } else if (user && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [user, segments]);
+  }, [ready, user, segments]);
 
   return (
     <>

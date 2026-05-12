@@ -52,7 +52,7 @@ const s = StyleSheet.create({
   radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   radioActive: { borderColor: C.paper, backgroundColor: C.paper },
   radioIdle: { borderColor: C.line },
-  title: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.paper, marginBottom: 2 },
+  title: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginBottom: 2 },
   titleActive: { color: C.paper },
   sub: { fontSize: 13, marginBottom: 12 },
   subActive: { color: 'rgba(244,240,232,0.8)' },
