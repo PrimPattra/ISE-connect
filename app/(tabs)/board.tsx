@@ -109,6 +109,7 @@ const s = StyleSheet.create({
   filterLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
   chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
   chipActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
+  chipActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   chipText: { fontSize: 12, color: C.ink2 },
   chipTextActive: { color: C.paper },
   clearBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: C.line },
