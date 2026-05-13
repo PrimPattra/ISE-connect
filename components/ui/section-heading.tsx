@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import { C, F } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface Props {
   kicker?: string;
@@ -22,6 +22,6 @@ export function SectionHeading({ kicker, title, children }: Props) {
 const s = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 16 },
   kicker: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1.4, marginBottom: 4 },
-  title: { fontSize: 30, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, lineHeight: 32 },
+  title: { fontSize: 30, fontFamily: F.interBold, color: C.ink, lineHeight: 36 },
   actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

@@ -81,7 +81,7 @@ const s = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   posted: { fontSize: 12, fontFamily: F.mono, color: C.muted, alignSelf: 'center' },
   blurb: { fontSize: 14, color: C.ink2, lineHeight: 20, marginBottom: 16 },
-  h5: { fontSize: 20, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginBottom: 8, marginTop: 16 },
+  h5: { fontSize: 20, fontFamily: F.interSemiBold, color: C.ink, marginBottom: 8, marginTop: 16 },
   li: { flexDirection: 'row', gap: 8, marginBottom: 6 },
   bullet: { color: C.muted, fontSize: 13 },
   liText: { fontSize: 13, color: C.ink2, flex: 1, lineHeight: 18 },
