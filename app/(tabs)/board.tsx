@@ -1,6 +1,7 @@
 import { JobCard } from '@/components/board/job-card';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
+import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -33,6 +34,7 @@ export default function BoardScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
+        <AppLogo />
         {user?.role === 'hunter' && (
           <View style={s.hero}>
             <Text style={s.heroKicker}>Welcome back · {user.profile.cohort}</Text>
