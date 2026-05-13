@@ -32,7 +32,7 @@ export function Modal({ open, onClose, title, children, footer }: Props) {
 }
 
 const s = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(27,26,23,0.45)', justifyContent: 'center', padding: 16 },
+  overlay: { flex: 1, backgroundColor: 'rgba(27,26,23,0.45)', justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 16 },
   sheet: { backgroundColor: C.paper, borderRadius: 16, borderWidth: 1, borderColor: C.line, maxHeight: '88%' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: C.line },
   title: { fontSize: 22, fontFamily: F.interSemiBold, color: C.ink, flex: 1 },

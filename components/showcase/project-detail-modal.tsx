@@ -12,9 +12,10 @@ interface Props {
   hideStats?: boolean;
   onEdit?: () => void;
   onAddToShowcase?: () => void;
+  onLike?: (id: string) => void;
 }
 
-export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAddToShowcase }: Props) {
+export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAddToShowcase, onLike }: Props) {
   if (!p) return null;
   const initials = p.by.name.split(' ').map(w => w[0]).slice(0, 2).join('');
 
@@ -100,11 +101,11 @@ export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAd
             <Text style={s.statLabel}>Views</Text>
             <Text style={s.statVal}>{p.views}</Text>
           </View>
-          <View style={s.stat}>
-            <Ionicons name="heart-outline" size={14} color={C.muted} />
-            <Text style={s.statLabel}>Likes</Text>
-            <Text style={s.statVal}>{p.likes}</Text>
-          </View>
+          <TouchableOpacity style={s.stat} onPress={() => onLike?.(p.id)} activeOpacity={0.7}>
+            <Ionicons name={p.liked ? 'heart' : 'heart-outline'} size={14} color={p.liked ? C.red : C.muted} />
+            <Text style={[s.statLabel, p.liked && s.likedLabel]}>Likes</Text>
+            <Text style={[s.statVal, p.liked && s.likedVal]}>{p.likes}</Text>
+          </TouchableOpacity>
         </View>
       )}
     </Modal>
@@ -138,7 +139,9 @@ const s = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10 },
   statLabel: { fontSize: 12, color: C.muted },
+  likedLabel: { color: C.red },
   statVal: { fontSize: 14, fontFamily: F.mono, color: C.ink, marginLeft: 'auto' as any },
+  likedVal: { color: C.red },
 });
 
 const pill = StyleSheet.create({

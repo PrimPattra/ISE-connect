@@ -14,10 +14,23 @@ import type { Project } from '@/types';
 
 export default function ShowcaseScreen() {
   const { user, projects, setProjects, toastMsg, toast } = useAppContext();
-  const [open, setOpen] = useState<Project | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const open = openId ? (projects.find(p => p.id === openId) ?? null) : null;
   const [q, setQ] = useState('');
 
   const filtered = projects.filter(p => !q || `${p.title} ${p.skills.join(' ')}`.toLowerCase().includes(q.toLowerCase()));
+
+  const toggleLike = (id: string) => {
+    setProjects(ps => ps.map(p => p.id === id
+      ? { ...p, liked: !p.liked, likes: p.liked ? p.likes - 1 : p.likes + 1 }
+      : p
+    ));
+  };
+
+  const openProject = (id: string) => {
+    setOpenId(id);
+    setProjects(ps => ps.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
+  };
 
   return (
     <SafeAreaView style={s.safe}>
@@ -38,13 +51,13 @@ export default function ShowcaseScreen() {
           </View>
         </Card>
 
-        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={setOpen} />)}
+        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={p => openProject(p.id)} onLike={toggleLike} />)}
         {filtered.length === 0 && (
           <EmptyState icon="image" title="No projects found." body="Try clearing the search or add a new project." />
         )}
       </ScrollView>
 
-      <ProjectDetailModal p={open} onClose={() => setOpen(null)} />
+      <ProjectDetailModal p={open} onClose={() => setOpenId(null)} onLike={toggleLike} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );
