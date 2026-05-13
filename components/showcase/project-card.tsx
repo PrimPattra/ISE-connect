@@ -82,6 +82,6 @@ const s = StyleSheet.create({
 });
 
 const pill = StyleSheet.create({
-  wrap: { backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 },
-  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
+  wrap: { backgroundColor: C.teal50, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2, fontWeight: 'bold' },
 });

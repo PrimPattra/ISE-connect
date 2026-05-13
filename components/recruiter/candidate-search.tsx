@@ -71,7 +71,7 @@ export function CandidateSearch({ applicants }: Props) {
 const s = StyleSheet.create({
   card: { padding: 16, marginBottom: 12 },
   kicker: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
-  title: { fontSize: 24, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginTop: 2 },
+  title: { fontSize: 24, fontFamily: F.interSemiBold, color: C.ink, marginTop: 2 },
   sub: { fontSize: 12, color: C.muted, marginTop: 4, marginBottom: 14 },
   searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: C.paper, marginBottom: 12 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },

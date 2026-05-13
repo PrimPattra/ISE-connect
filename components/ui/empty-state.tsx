@@ -25,7 +25,7 @@ export function EmptyState({ icon = 'compass', title, body, action }: Props) {
 const s = StyleSheet.create({
   wrap: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: 24 },
   iconWrap: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.paper2, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  title: { fontSize: 24, fontFamily: F.serif, fontStyle: 'italic', color: C.ink },
+  title: { fontSize: 24, fontFamily: F.interSemiBold, color: C.ink },
   body: { fontSize: 14, color: C.muted, marginTop: 6, textAlign: 'center', maxWidth: 280 },
   action: { marginTop: 16 },
 });

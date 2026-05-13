@@ -2,11 +2,11 @@ import { Platform } from 'react-native';
 
 export const C = {
   paper: '#fbfbfb',
-  paper2: '#EBE5D8', //EBE5D8
-  ink: '#1B1A17',
-  ink2: '#3A3833',
-  muted: '#7A7568',
-  line: '#e6e3dd',  //#D9D2C2
+  paper2: '#F5F7FA', //EBE5D8
+  ink: '#101012',
+  ink2: '#091d3c',
+  muted: '#6a687a',
+  line: '#dedde6',  //#D9D2C2
   teal50: '#eef7fd',
   teal100: '#BBDEFB',
   teal500: '#1976D2',
@@ -29,6 +29,10 @@ export const F = {
   serif: Platform.select({ ios: 'Georgia', default: 'serif' }) as string,
   mono: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string,
   sans: Platform.select({ ios: 'System', default: 'normal' }) as string,
+  inter: 'Inter_400Regular',
+  interMedium: 'Inter_500Medium',
+  interSemiBold: 'Inter_600SemiBold',
+  interBold: 'Inter_700Bold',
 };
 
 export const Shadow = {
