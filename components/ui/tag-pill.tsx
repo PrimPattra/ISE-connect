@@ -28,3 +28,4 @@ const s = StyleSheet.create({
   textLight: { color: C.teal600 },
   textDark: { color: C.paper },
 });
+  

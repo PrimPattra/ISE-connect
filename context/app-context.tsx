@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
-import { SEED_JOBS, SEED_REVIEWS, SEED_PROJECTS, SEED_REGISTERED_USERS } from '@/data/seed';
-import type { Job, Review, Project, User } from '@/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { SEED_JOBS, SEED_PROJECTS, SEED_REGISTERED_USERS, SEED_REVIEWS } from '@/data/seed';
+import type { Job, Project, Review, User } from '@/types';
+
+const USER_KEY = 'ise_user';
 
 interface AppContextValue {
   user: User | null;
@@ -21,12 +24,24 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [jobs, setJobs] = useState<Job[]>(SEED_JOBS);
   const [reviews, setReviews] = useState<Review[]>(SEED_REVIEWS);
   const [projects, setProjects] = useState<Project[]>(SEED_PROJECTS);
   const [toastMsg, setToastMsg] = useState('');
   const [registeredEmails, setRegisteredEmails] = useState<string[]>(SEED_REGISTERED_USERS);
+
+  useEffect(() => {
+    AsyncStorage.getItem(USER_KEY).then(raw => {
+      if (raw) setUserState(JSON.parse(raw));
+    });
+  }, []);
+
+  function setUser(u: User | null) {
+    setUserState(u);
+    if (u) AsyncStorage.setItem(USER_KEY, JSON.stringify(u));
+    else AsyncStorage.removeItem(USER_KEY);
+  }
 
   function toast(msg: string) {
     setToastMsg(msg);
