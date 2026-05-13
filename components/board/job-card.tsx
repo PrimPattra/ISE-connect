@@ -1,6 +1,7 @@
 import { Icon } from '@/components/icon';
 import { Card } from '@/components/ui/card';
 import { TagPill } from '@/components/ui/tag-pill';
+import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import type { Job } from '@/types';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -33,12 +34,14 @@ export function JobCard({ job, onOpen, onSave }: Props) {
               ))}
             </View>
           </View>
-          <TouchableOpacity
-            onPress={() => onSave(job.id)}
-            style={[s.saveBtn, job.saved && s.saveBtnActive]}
-          >
-            <Icon name="bookmark" size={16} color={job.saved ? C.paper : C.muted} />
-          </TouchableOpacity>
+          <Tooltip label={job.saved ? 'Saved' : 'Save'}>
+            <TouchableOpacity
+              onPress={() => onSave(job.id)}
+              style={[s.saveBtn, job.saved && s.saveBtnActive]}
+            >
+              <Icon name="bookmark" size={16} color={job.saved ? C.paper : C.muted} />
+            </TouchableOpacity>
+          </Tooltip>
         </View>
         <View style={s.divider} />
         <View style={s.meta}>

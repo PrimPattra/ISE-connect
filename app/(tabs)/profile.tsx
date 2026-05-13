@@ -1,19 +1,61 @@
+import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SectionHeading } from '@/components/ui/section-heading';
+import { AddProjectModal } from '@/components/profile/add-project-modal';
 import { ProfileStat } from '@/components/profile/profile-stat';
-import { TagPill } from '@/components/ui/tag-pill';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Modal } from '@/components/ui/modal';
+import { Tooltip } from '@/components/ui/tooltip';
 import { Icon } from '@/components/icon';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { TagPill } from '@/components/ui/tag-pill';
 import { useAppContext } from '@/context/app-context';
 import { C, F } from '@/constants/theme';
+import type { Project } from '@/types';
 
 export default function ProfileScreen() {
-  const { user, jobs, projects } = useAppContext();
+  const { user, jobs, projects, setProjects, toast } = useAppContext();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editProject, setEditProject] = useState<Project | null>(null);
+  const [showcaseProject, setShowcaseProject] = useState<Project | null>(null);
   if (!user) return null;
 
   const saved = jobs.filter(j => j.saved);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
+
+  const handleAddProject = (data: { title: string; skills: string; description: string; projectLink: string }) => {
+    setProjects(ps => [{
+      id: 'pp' + (ps.length + 1),
+      title: data.title,
+      by: { name: user.profile.name, tag: user.profile.cohort || 'ISE' },
+      collaborators: [],
+      skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
+      description: data.description || 'No description provided.',
+      projectLink: data.projectLink,
+      contactInfo: user.profile.email || '',
+      media: [],
+      likes: 0, views: 0,
+    }, ...ps]);
+    toast('Project added.');
+  };
+
+  const handleEditProject = (data: { title: string; skills: string; description: string; projectLink: string }) => {
+    if (!editProject) return;
+    setProjects(ps => ps.map(p => p.id === editProject.id ? {
+      ...p,
+      title: data.title,
+      skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
+      description: data.description || p.description,
+      projectLink: data.projectLink,
+    } : p));
+    toast('Project updated.');
+    setEditProject(null);
+  };
+
+  const handleAddToShowcase = () => {
+    toast(`"${showcaseProject?.title}" added to Showcase.`);
+    setShowcaseProject(null);
+  };
 
   return (
     <SafeAreaView style={s.safe}>
@@ -79,22 +121,73 @@ export default function ProfileScreen() {
         <Card style={s.section}>
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Your portfolio</Text>
-            <TouchableOpacity style={s.addBtn}>
-              <Icon name="plus" size={14} color={C.ink2} />
+            <TouchableOpacity style={s.addBtn} onPress={() => setAddOpen(true)}>
+              <Icon name="plus" size={14} color={C.teal600} />
             </TouchableOpacity>
           </View>
           <View style={s.portfolioGrid}>
             {projects.slice(0, 4).map(p => (
               <View key={p.id} style={s.portfolioItem}>
-                <Text style={s.portfolioTitle} numberOfLines={1}>{p.title}</Text>
-                <View style={s.portfolioChips}>
-                  {p.skills.slice(0, 3).map(sk => <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>)}
+                <View style={s.portfolioMain}>
+                  <Text style={s.portfolioTitle} numberOfLines={1}>{p.title}</Text>
+                  <View style={s.portfolioChips}>
+                    {p.skills.slice(0, 3).map(sk => <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>)}
+                  </View>
+                </View>
+                <View style={s.portfolioActions}>
+                  <Tooltip label="Edit">
+                    <TouchableOpacity style={s.actionBtn} onPress={() => setEditProject(p)}>
+                      <Icon name="edit" size={13} color={C.ink2} />
+                    </TouchableOpacity>
+                  </Tooltip>
+                  <Tooltip label="Add to Showcase">
+                    <TouchableOpacity style={[s.actionBtn, s.actionBtnBlue]} onPress={() => setShowcaseProject(p)}>
+                      <Icon name="image" size={13} color={C.teal600} />
+                    </TouchableOpacity>
+                  </Tooltip>
                 </View>
               </View>
             ))}
           </View>
         </Card>
       </ScrollView>
+
+      <AddProjectModal open={addOpen} onClose={() => setAddOpen(false)} onAdd={handleAddProject} />
+
+      <AddProjectModal
+        open={!!editProject}
+        onClose={() => setEditProject(null)}
+        onAdd={handleAddProject}
+        initialData={editProject ? {
+          title: editProject.title,
+          skills: editProject.skills.join(', '),
+          description: editProject.description,
+          projectLink: editProject.projectLink ?? '',
+        } : undefined}
+        onEdit={handleEditProject}
+      />
+
+      <Modal
+        open={!!showcaseProject}
+        onClose={() => setShowcaseProject(null)}
+        title="Add to Showcase?"
+        footer={
+          <>
+            <TouchableOpacity style={s.ghostBtn} onPress={() => setShowcaseProject(null)}>
+              <Text style={s.ghostBtnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.primaryBtn} onPress={handleAddToShowcase}>
+              <Text style={s.primaryBtnText}>Add to Showcase</Text>
+              <Icon name="image" size={14} color={C.paper} />
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <Text style={s.confirmText}>
+          <Text style={s.confirmTitle}>"{showcaseProject?.title}"</Text>
+          {' '}will be published to the Showcase tab for the ISE community to see.
+        </Text>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -127,9 +220,19 @@ const s = StyleSheet.create({
   savedJobMeta: { fontSize: 12, color: C.muted, marginTop: 2 },
   addBtn: { padding: 6, borderRadius: 8, borderWidth: 1, borderColor: C.line },
   portfolioGrid: { gap: 8 },
-  portfolioItem: { borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10 },
+  portfolioItem: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10, gap: 8 },
+  portfolioMain: { flex: 1 },
   portfolioTitle: { fontSize: 14, color: C.ink, marginBottom: 6 },
   portfolioChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
+  portfolioActions: { flexDirection: 'row', gap: 6 },
+  actionBtn: { padding: 6, borderRadius: 7, borderWidth: 1, borderColor: C.line },
+  actionBtnBlue: { borderColor: C.teal100 },
+  ghostBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: C.line },
+  ghostBtnText: { fontSize: 14, color: C.ink },
+  primaryBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, backgroundColor: C.teal600 },
+  primaryBtnText: { fontSize: 14, color: C.paper, fontWeight: '500' },
+  confirmText: { fontSize: 14, color: C.muted, lineHeight: 22 },
+  confirmTitle: { color: C.ink, fontWeight: '500' },
 });
 
 const chip = StyleSheet.create({

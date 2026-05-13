@@ -1,19 +1,21 @@
-import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { ReviewCard } from '@/components/reviews/review-card';
+import { Icon } from '@/components/icon';
 import { InterviewCard } from '@/components/reviews/interview-card';
-import { ResourceCard } from '@/components/reviews/resource-card';
 import { QACard } from '@/components/reviews/qa-card';
+import { ResourceCard } from '@/components/reviews/resource-card';
+import { ReviewCard } from '@/components/reviews/review-card';
 import { SalarySection } from '@/components/reviews/salary-section';
 import { WriteReviewModal } from '@/components/reviews/write-review-modal';
-import { SectionHeading } from '@/components/ui/section-heading';
-import { EmptyState } from '@/components/ui/empty-state';
-import { Toast } from '@/components/ui/toast';
+import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
-import { Icon } from '@/components/icon';
+import { Tooltip } from '@/components/ui/tooltip';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { Toast } from '@/components/ui/toast';
+import { C } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
-import { SEED_INTERVIEWS, SEED_RESOURCES, SEED_QA } from '@/data/seed';
-import { C, F } from '@/constants/theme';
+import { SEED_INTERVIEWS, SEED_QA, SEED_RESOURCES } from '@/data/seed';
+import { useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 
@@ -53,21 +55,24 @@ export default function ReviewsScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
+        <AppLogo />
         <SectionHeading kicker="02 · Workplace Reviews & Career Tips" title="What it's actually like inside.">
-          <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
-            <Icon name="plus" size={15} color={C.paper} />
-          </TouchableOpacity>
+          <Tooltip label="Write a review">
+            <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
+              <Icon name="plus" size={15} color={C.paper} />
+            </TouchableOpacity>
+          </Tooltip>
         </SectionHeading>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabScroll}>
-          <View style={s.tabRow}>
-            {TABS.map(t => (
-              <TouchableOpacity key={t.id} style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
-                <Icon name={t.icon} size={14} color={tab === t.id ? C.paper : C.ink2} />
+        <View style={s.tabRow}>
+          {TABS.map(t => (
+            <Tooltip key={t.id} label={t.label}>
+              <TouchableOpacity style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
+                <Icon name={t.icon} size={14} color={tab === t.id ? C.paper : C.teal600} />
               </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+            </Tooltip>
+          ))}
+        </View>
 
         {tab === 'reviews' && (
           <>
@@ -103,10 +108,9 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
   writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
-  tabScroll: { marginBottom: 14 },
-  tabRow: { flexDirection: 'row', gap: 8 },
+  tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
-  tabBtnActive: { backgroundColor: C.ink, borderColor: C.ink },
+  tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   searchCard: { padding: 10, marginBottom: 10 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import { C, F } from '@/constants/theme';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface Props {
   children: React.ReactNode;
@@ -25,6 +25,7 @@ const s = StyleSheet.create({
   light: { backgroundColor: C.teal50, borderColor: C.line },
   dark: { backgroundColor: C.ink, borderColor: C.ink },
   text: { fontSize: 11, fontFamily: F.mono, fontWeight: 'bold' },
-  textLight: { color: C.ink2 },
+  textLight: { color: C.teal600 },
   textDark: { color: C.paper },
 });
+  

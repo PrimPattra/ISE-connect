@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ProjectCard } from '@/components/showcase/project-card';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
+import { AppLogo } from '@/components/ui/app-logo';
 import { SectionHeading } from '@/components/ui/section-heading';
+import { Tooltip } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Toast } from '@/components/ui/toast';
 import { Card } from '@/components/ui/card';
@@ -38,10 +40,13 @@ export default function ShowcaseScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
+        <AppLogo />
         <SectionHeading kicker="03 · Project Showcase & Portfolio" title="Work made by ISE.">
-          <TouchableOpacity style={s.addBtn} onPress={addProject}>
-            <Icon name="plus" size={15} color={C.paper} />
-          </TouchableOpacity>
+          <Tooltip label="Add project">
+            <TouchableOpacity style={s.addBtn} onPress={addProject}>
+              <Icon name="plus" size={15} color={C.paper} />
+            </TouchableOpacity>
+          </Tooltip>
         </SectionHeading>
 
         <Card style={s.searchCard}>
