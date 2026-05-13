@@ -259,8 +259,8 @@ const s = StyleSheet.create({
 });
 
 const chip = StyleSheet.create({
-  wrap: { backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
-  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
+  wrap: { backgroundColor: C.teal50, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2, fontWeight: 'bold' },
   add: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderStyle: 'dashed', borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
   addText: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
 });
