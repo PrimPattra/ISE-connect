@@ -143,25 +143,19 @@ export default function ProfileScreen() {
                     {p.skills.slice(0, 3).map(sk => <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>)}
                   </View>
                 </View>
-                <View style={s.portfolioActions}>
-                  <Tooltip label="Edit">
-                    <TouchableOpacity style={s.actionBtn} onPress={() => setEditProject(p)}>
-                      <Icon name="edit" size={13} color={C.ink2} />
-                    </TouchableOpacity>
-                  </Tooltip>
-                  <Tooltip label="Add to Showcase">
-                    <TouchableOpacity style={[s.actionBtn, s.actionBtnBlue]} onPress={() => setShowcaseProject(p)}>
-                      <Icon name="image" size={13} color={C.teal600} />
-                    </TouchableOpacity>
-                  </Tooltip>
-                </View>
               </TouchableOpacity>
             ))}
           </View>
         </Card>
       </ScrollView>
 
-      <ProjectDetailModal p={viewProject} onClose={() => setViewProject(null)} hideStats />
+      <ProjectDetailModal
+        p={viewProject}
+        onClose={() => setViewProject(null)}
+        hideStats
+        onEdit={() => { setEditProject(viewProject); setViewProject(null); }}
+        onAddToShowcase={() => { setShowcaseProject(viewProject); setViewProject(null); }}
+      />
       <AddProjectModal open={addOpen} onClose={() => setAddOpen(false)} onAdd={handleAddProject} />
 
       <AddProjectModal
@@ -254,9 +248,6 @@ const s = StyleSheet.create({
   portfolioMain: { flex: 1 },
   portfolioTitle: { fontSize: 14, color: C.ink, marginBottom: 6 },
   portfolioChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 4 },
-  portfolioActions: { flexDirection: 'row', gap: 6 },
-  actionBtn: { padding: 6, borderRadius: 7, borderWidth: 1, borderColor: C.line },
-  actionBtnBlue: { borderColor: C.teal100 },
   ghostBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: C.line },
   ghostBtnText: { fontSize: 14, color: C.ink },
   primaryBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, backgroundColor: C.teal600 },

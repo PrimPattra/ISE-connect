@@ -10,15 +10,17 @@ interface Props {
   p: Project | null;
   onClose: () => void;
   hideStats?: boolean;
+  onEdit?: () => void;
+  onAddToShowcase?: () => void;
 }
 
-export function ProjectDetailModal({ p, onClose, hideStats = false }: Props) {
+export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAddToShowcase }: Props) {
   if (!p) return null;
   const initials = p.by.name.split(' ').map(w => w[0]).slice(0, 2).join('');
 
   return (
     <Modal open={!!p} onClose={onClose} title={p.title}>
-      {/* Header: creator | collaborators */}
+      {/* Header: creator | collaborators | action buttons */}
       <View style={s.headerRow}>
         <View style={s.avatar}><Text style={s.avatarText}>{initials}</Text></View>
         <View style={s.headerInfo}>
@@ -37,6 +39,20 @@ export function ProjectDetailModal({ p, onClose, hideStats = false }: Props) {
             </View>
           )}
         </View>
+        {(onEdit || onAddToShowcase) && (
+          <View style={s.actionBtns}>
+            {onEdit && (
+              <TouchableOpacity style={s.actionBtn} onPress={onEdit}>
+                <Icon name="edit" size={13} color={C.ink2} />
+              </TouchableOpacity>
+            )}
+            {onAddToShowcase && (
+              <TouchableOpacity style={[s.actionBtn, s.actionBtnBlue]} onPress={onAddToShowcase}>
+                <Icon name="image" size={13} color={C.teal600} />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
 
       {/* Description */}
@@ -116,6 +132,9 @@ const s = StyleSheet.create({
   contactCard: { padding: 14, marginBottom: 16 },
   contactRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   contactText: { fontSize: 13, color: C.ink2, flex: 1, lineHeight: 20 },
+  actionBtns: { flexDirection: 'row', gap: 6 },
+  actionBtn: { padding: 6, borderRadius: 7, borderWidth: 1, borderColor: C.line },
+  actionBtnBlue: { borderColor: C.teal100 },
   statsRow: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10 },
   statLabel: { fontSize: 12, color: C.muted },
