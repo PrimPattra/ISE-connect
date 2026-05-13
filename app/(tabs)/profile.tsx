@@ -26,7 +26,7 @@ export default function ProfileScreen() {
   const saved = jobs.filter(j => j.saved);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
-  const handleAddProject = (data: { title: string; skills: string; description: string; projectLink: string }) => {
+  const handleAddProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
     setProjects(ps => [{
       id: 'pp' + (ps.length + 1),
       title: data.title,
@@ -35,14 +35,14 @@ export default function ProfileScreen() {
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || 'No description provided.',
       projectLink: data.projectLink,
-      contactInfo: user.profile.email || '',
+      contactInfo: data.contactInfo || user.profile.email || '',
       media: [],
       likes: 0, views: 0,
     }, ...ps]);
     toast('Project added.');
   };
 
-  const handleEditProject = (data: { title: string; skills: string; description: string; projectLink: string }) => {
+  const handleEditProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
     if (!editProject) return;
     setProjects(ps => ps.map(p => p.id === editProject.id ? {
       ...p,
@@ -50,6 +50,7 @@ export default function ProfileScreen() {
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || p.description,
       projectLink: data.projectLink,
+      contactInfo: data.contactInfo || p.contactInfo,
     } : p));
     toast('Project updated.');
     setEditProject(null);
@@ -167,6 +168,7 @@ export default function ProfileScreen() {
           skills: editProject.skills.join(', '),
           description: editProject.description,
           projectLink: editProject.projectLink ?? '',
+          contactInfo: editProject.contactInfo ?? '',
         } : undefined}
         onEdit={handleEditProject}
       />
