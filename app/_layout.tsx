@@ -20,7 +20,7 @@ function RootLayoutContent() {
     if (!user && !inAuthGroup) {
       router.replace('/(auth)');
     } else if (user && inAuthGroup) {
-      router.replace('/(tabs)/board');
+      router.replace(user.role === 'recruiter' ? '/(tabs)/recruiter' : '/(tabs)/board');
     }
   }, [ready, user, segments]);
 

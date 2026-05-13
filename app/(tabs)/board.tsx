@@ -17,6 +17,7 @@ const LOCS = ['All', 'Remote', 'Hybrid', 'On-site'];
 
 export default function BoardScreen() {
   const { user, jobs, setJobs, toastMsg, toast } = useAppContext();
+  const isRecruiter = user?.role === 'recruiter';
   const [q, setQ] = useState('');
   const [type, setType] = useState('All');
   const [loc, setLoc] = useState('All');
@@ -77,7 +78,16 @@ export default function BoardScreen() {
           </ScrollView>
         </Card>
 
-        {filtered.map(j => <JobCard key={j.id} job={j} onOpen={setOpen} onSave={toggleSave} />)}
+        {filtered.map(j => (
+          <JobCard
+            key={j.id}
+            job={j}
+            onOpen={setOpen}
+            onSave={toggleSave}
+            isRecruiter={isRecruiter}
+            isOwnPosting={isRecruiter && j.company === user?.profile?.company}
+          />
+        ))}
         {filtered.length === 0 && (
           <EmptyState
             icon="search"
@@ -92,7 +102,7 @@ export default function BoardScreen() {
         )}
       </ScrollView>
 
-      <JobDetailModal job={open} onClose={() => setOpen(null)} />
+      <JobDetailModal job={open} onClose={() => setOpen(null)} isRecruiter={isRecruiter} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );

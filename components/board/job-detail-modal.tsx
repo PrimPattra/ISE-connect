@@ -9,9 +9,10 @@ import type { Job } from '@/types';
 interface Props {
   job: Job | null;
   onClose: () => void;
+  isRecruiter?: boolean;
 }
 
-export function JobDetailModal({ job, onClose }: Props) {
+export function JobDetailModal({ job, onClose, isRecruiter }: Props) {
   if (!job) return null;
   const initials = job.poster.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
@@ -31,10 +32,12 @@ export function JobDetailModal({ job, onClose }: Props) {
           <TouchableOpacity style={[btn.base, btn.ghost]} onPress={onClose}>
             <Text style={btn.ghostText}>Close</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[btn.base, btn.primary]} onPress={handleApply}>
-            <Text style={btn.primaryText}>Apply</Text>
-            <Icon name="send" size={15} color={C.paper} />
-          </TouchableOpacity>
+          {!isRecruiter && (
+            <TouchableOpacity style={[btn.base, btn.primary]} onPress={handleApply}>
+              <Text style={btn.primaryText}>Apply</Text>
+              <Icon name="send" size={15} color={C.paper} />
+            </TouchableOpacity>
+          )}
         </>
       }
     >
