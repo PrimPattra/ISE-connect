@@ -9,9 +9,10 @@ import type { Project } from '@/types';
 interface Props {
   p: Project | null;
   onClose: () => void;
+  hideStats?: boolean;
 }
 
-export function ProjectDetailModal({ p, onClose }: Props) {
+export function ProjectDetailModal({ p, onClose, hideStats = false }: Props) {
   if (!p) return null;
   const initials = p.by.name.split(' ').map(w => w[0]).slice(0, 2).join('');
 
@@ -76,18 +77,20 @@ export function ProjectDetailModal({ p, onClose }: Props) {
       )}
 
       {/* Stats */}
-      <View style={s.statsRow}>
-        <View style={s.stat}>
-          <Ionicons name="eye-outline" size={14} color={C.muted} />
-          <Text style={s.statLabel}>Views</Text>
-          <Text style={s.statVal}>{p.views}</Text>
+      {!hideStats && (
+        <View style={s.statsRow}>
+          <View style={s.stat}>
+            <Ionicons name="eye-outline" size={14} color={C.muted} />
+            <Text style={s.statLabel}>Views</Text>
+            <Text style={s.statVal}>{p.views}</Text>
+          </View>
+          <View style={s.stat}>
+            <Ionicons name="heart-outline" size={14} color={C.muted} />
+            <Text style={s.statLabel}>Likes</Text>
+            <Text style={s.statVal}>{p.likes}</Text>
+          </View>
         </View>
-        <View style={s.stat}>
-          <Ionicons name="heart-outline" size={14} color={C.muted} />
-          <Text style={s.statLabel}>Likes</Text>
-          <Text style={s.statVal}>{p.likes}</Text>
-        </View>
-      </View>
+      )}
     </Modal>
   );
 }

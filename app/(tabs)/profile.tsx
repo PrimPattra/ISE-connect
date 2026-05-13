@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AddProjectModal } from '@/components/profile/add-project-modal';
+import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { ProfileStat } from '@/components/profile/profile-stat';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -17,6 +18,7 @@ export default function ProfileScreen() {
   const { user, setUser, jobs, projects, setProjects, toast } = useAppContext();
   const [addOpen, setAddOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
+  const [viewProject, setViewProject] = useState<Project | null>(null);
   const [showcaseProject, setShowcaseProject] = useState<Project | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
   if (!user) return null;
@@ -134,7 +136,7 @@ export default function ProfileScreen() {
           </View>
           <View style={s.portfolioGrid}>
             {projects.slice(0, 4).map(p => (
-              <View key={p.id} style={s.portfolioItem}>
+              <TouchableOpacity key={p.id} style={s.portfolioItem} onPress={() => setViewProject(p)}>
                 <View style={s.portfolioMain}>
                   <Text style={s.portfolioTitle} numberOfLines={1}>{p.title}</Text>
                   <View style={s.portfolioChips}>
@@ -153,12 +155,13 @@ export default function ProfileScreen() {
                     </TouchableOpacity>
                   </Tooltip>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         </Card>
       </ScrollView>
 
+      <ProjectDetailModal p={viewProject} onClose={() => setViewProject(null)} hideStats />
       <AddProjectModal open={addOpen} onClose={() => setAddOpen(false)} onAdd={handleAddProject} />
 
       <AddProjectModal

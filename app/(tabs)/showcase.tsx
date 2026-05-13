@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { ProjectCard } from '@/components/showcase/project-card';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { AppLogo } from '@/components/ui/app-logo';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { Tooltip } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Toast } from '@/components/ui/toast';
 import { Card } from '@/components/ui/card';
@@ -20,34 +19,11 @@ export default function ShowcaseScreen() {
 
   const filtered = projects.filter(p => !q || `${p.title} ${p.skills.join(' ')}`.toLowerCase().includes(q.toLowerCase()));
 
-  const addProject = () => {
-    const np: Project = {
-      id: 'pn' + (projects.length + 1),
-      title: 'Untitled — new project',
-      by: { name: user?.profile.name || 'You', tag: user?.profile.cohort || 'ICE' },
-      collaborators: [],
-      skills: ['Add skills'],
-      description: 'A new project draft. Tap to expand and fill in details.',
-      projectLink: '',
-      contactInfo: user?.profile.email || '',
-      media: [{ kind: 'image', label: 'Cover image' }, { kind: 'link', label: 'Add a link' }],
-      likes: 0, views: 0,
-    };
-    setProjects(ps => [np, ...ps]);
-    toast('Project draft created.');
-  };
-
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
         <AppLogo />
-        <SectionHeading kicker="03 · Project Showcase & Portfolio" title="Work made by ISE.">
-          <Tooltip label="Add project">
-            <TouchableOpacity style={s.addBtn} onPress={addProject}>
-              <Icon name="plus" size={15} color={C.paper} />
-            </TouchableOpacity>
-          </Tooltip>
-        </SectionHeading>
+        <SectionHeading kicker="03 · Project Showcase & Portfolio" title="Work made by ISE." />
 
         <Card style={s.searchCard}>
           <View style={s.searchRow}>
@@ -77,7 +53,6 @@ export default function ShowcaseScreen() {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
-  addBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
   searchCard: { padding: 10, marginBottom: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },
