@@ -14,10 +14,11 @@ import { C, F } from '@/constants/theme';
 import type { Project } from '@/types';
 
 export default function ProfileScreen() {
-  const { user, jobs, projects, setProjects, toast } = useAppContext();
+  const { user, setUser, jobs, projects, setProjects, toast } = useAppContext();
   const [addOpen, setAddOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [showcaseProject, setShowcaseProject] = useState<Project | null>(null);
+  const [signOutOpen, setSignOutOpen] = useState(false);
   if (!user) return null;
 
   const saved = jobs.filter(j => j.saved);
@@ -60,7 +61,13 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
-        <SectionHeading kicker="Your profile" title={`${user.profile.name}.`} />
+        <SectionHeading kicker="Your profile" title={`${user.profile.name}.`}>
+          <Tooltip label="Sign out">
+            <TouchableOpacity style={s.signOutBtn} onPress={() => setSignOutOpen(true)}>
+              <Icon name="logout" size={16} color={C.muted} />
+            </TouchableOpacity>
+          </Tooltip>
+        </SectionHeading>
 
         <Card style={s.profileCard}>
           <View style={s.avatarRow}>
@@ -168,6 +175,25 @@ export default function ProfileScreen() {
       />
 
       <Modal
+        open={signOutOpen}
+        onClose={() => setSignOutOpen(false)}
+        title="Sign out?"
+        footer={
+          <>
+            <TouchableOpacity style={s.ghostBtn} onPress={() => setSignOutOpen(false)}>
+              <Text style={s.ghostBtnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.primaryBtn} onPress={() => setUser(null)}>
+              <Icon name="logout" size={14} color={C.paper} />
+              <Text style={s.primaryBtnText}>Sign out</Text>
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <Text style={s.confirmText}>You'll be returned to the sign-in screen.</Text>
+      </Modal>
+
+      <Modal
         open={!!showcaseProject}
         onClose={() => setShowcaseProject(null)}
         title="Add to Showcase?"
@@ -208,6 +234,7 @@ const s = StyleSheet.create({
   stats: { flexDirection: 'row', gap: 8 },
   skillsLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  signOutBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line },
   editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingVertical: 10 },
   editBtnText: { fontSize: 14, color: C.ink2 },
   section: { padding: 16, marginBottom: 12 },
