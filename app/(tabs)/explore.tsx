@@ -7,6 +7,7 @@ import { SalarySection } from '@/components/reviews/salary-section';
 import { WriteReviewModal } from '@/components/reviews/write-review-modal';
 import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
+import { Tooltip } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Toast } from '@/components/ui/toast';
@@ -56,20 +57,22 @@ export default function ReviewsScreen() {
       <ScrollView contentContainerStyle={s.scroll}>
         <AppLogo />
         <SectionHeading kicker="02 · Workplace Reviews & Career Tips" title="What it's actually like inside.">
-          <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
-            <Icon name="plus" size={15} color={C.paper} />
-          </TouchableOpacity>
+          <Tooltip label="Write a review">
+            <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
+              <Icon name="plus" size={15} color={C.paper} />
+            </TouchableOpacity>
+          </Tooltip>
         </SectionHeading>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabScroll}>
-          <View style={s.tabRow}>
-            {TABS.map(t => (
-              <TouchableOpacity key={t.id} style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
+        <View style={s.tabRow}>
+          {TABS.map(t => (
+            <Tooltip key={t.id} label={t.label}>
+              <TouchableOpacity style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
                 <Icon name={t.icon} size={14} color={tab === t.id ? C.paper : C.teal600} />
               </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+            </Tooltip>
+          ))}
+        </View>
 
         {tab === 'reviews' && (
           <>
@@ -105,8 +108,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
   writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
-  tabScroll: { marginBottom: 14 },
-  tabRow: { flexDirection: 'row', gap: 8 },
+  tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
   tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   searchCard: { padding: 10, marginBottom: 10 },

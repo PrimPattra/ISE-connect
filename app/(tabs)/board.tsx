@@ -63,7 +63,11 @@ export default function BoardScreen() {
                   <Text style={[s.chipText, type === t && s.chipTextActive]}>{t}</Text>
                 </TouchableOpacity>
               ))}
-              <Text style={[s.filterLabel, { marginLeft: 12 }]}>Location</Text>
+            </View>
+          </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.filterScroll}>
+            <View style={s.filterRow}>
+              <Text style={s.filterLabel}>Location</Text>
               {LOCS.map(l => (
                 <TouchableOpacity key={l} style={[s.chip, loc === l && s.chipActive]} onPress={() => setLoc(l)}>
                   <Text style={[s.chipText, loc === l && s.chipTextActive]}>{l}</Text>
