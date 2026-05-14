@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/ui/card';
 import { TagPill } from '@/components/ui/tag-pill';
 import { C, F } from '@/constants/theme';
 import type { Review } from '@/types';
+import { StyleSheet, Text, View } from 'react-native';
 
 function SalaryStat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
@@ -25,12 +25,16 @@ export function SalarySection({ reviews }: Props) {
   return (
     <Card style={s.card}>
       <View style={s.header}>
-        <View>
-          <Text style={s.kicker}>Optional · folded into reviews</Text>
-          <Text style={s.title}>Salary transparency</Text>
-          <Text style={s.sub}>Aggregated from review submissions where the author opted to share.</Text>
+        <View style={s.headerTop}>
+          <View style={{ flex: 1, marginRight: 12 }}>
+            <Text style={s.kicker}>·Optional{"\n"}·folded into reviews</Text>
+          </View>
+          <View style={{ flexShrink: 0 }}> 
+            <TagPill dark>{withSalary.length} of {reviews.length} shared</TagPill>
+          </View>
         </View>
-        <TagPill dark>{withSalary.length} of {reviews.length} shared</TagPill>
+        <Text style={s.title}>Salary transparency</Text>
+        <Text style={s.sub}>Aggregated from review submissions where the author opted to share.</Text>
       </View>
       <View style={s.stats}>
         <SalaryStat label="Avg monthly" value={`฿${avg(monthly).toLocaleString()}`} sub={`${monthly.length} entries`} />
@@ -41,8 +45,8 @@ export function SalarySection({ reviews }: Props) {
       {withSalary.map(r => (
         <View key={r.id} style={s.row}>
           <View style={s.rowLeft}>
-            <Text style={s.rowRole}>{r.salary!.role}</Text>
-            <Text style={s.rowCompany}>· {r.company}</Text>
+            <Text style={s.rowRole} numberOfLines={1}>{r.salary!.role}</Text>
+            <Text style={s.rowCompany} numberOfLines={1}>{r.company}</Text>
           </View>
           <Text style={s.rowAmt}>{r.salary!.amount.toLocaleString()} {r.salary!.currency}/{r.salary!.period}</Text>
         </View>
@@ -53,19 +57,20 @@ export function SalarySection({ reviews }: Props) {
 
 const s = StyleSheet.create({
   card: { padding: 16, marginBottom: 12 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14, gap: 12 },
+  header: { flexDirection: 'column', marginBottom: 14 },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   kicker: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
-  title: { fontSize: 24, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginTop: 2 },
-  sub: { fontSize: 13, color: C.muted, marginTop: 4, maxWidth: 260 },
+  title: { fontSize: 24, fontFamily: F.interSemiBold, color: C.ink, marginTop: 2 },
+  sub: { fontSize: 13, color: C.muted, marginTop: 4 },
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10 },
   statLabel: { fontSize: 10, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
-  statVal: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginTop: 4 },
+  statVal: { fontSize: 22, fontFamily: F.interMedium, color: C.ink, marginTop: 4 },
   statSub: { fontSize: 11, color: C.muted, marginTop: 2 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
-  rowLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 12 },
+  rowLeft: { flexDirection: 'column', flex: 1 },
   rowRole: { fontSize: 13, color: C.ink2 },
-  rowCompany: { fontSize: 12, color: C.muted },
-  rowAmt: { fontSize: 13, fontFamily: F.mono, color: C.ink },
+  rowCompany: { fontSize: 12, color: C.muted, marginTop: 1 },
+  rowAmt: { fontSize: 13, fontFamily: F.mono, color: C.ink, flexShrink: 0 },
 });

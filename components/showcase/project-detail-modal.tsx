@@ -9,14 +9,35 @@ import type { Project } from '@/types';
 interface Props {
   p: Project | null;
   onClose: () => void;
+  hideStats?: boolean;
+  onEdit?: () => void;
+  onAddToShowcase?: () => void;
+  onLike?: (id: string) => void;
 }
 
-export function ProjectDetailModal({ p, onClose }: Props) {
+export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAddToShowcase, onLike }: Props) {
   if (!p) return null;
   const initials = p.by.name.split(' ').map(w => w[0]).slice(0, 2).join('');
 
+  const footer = (onEdit || onAddToShowcase) ? (
+    <View style={s.footerRow}>
+      {onEdit && (
+        <TouchableOpacity style={s.footerGhost} onPress={onEdit}>
+          <Icon name="edit" size={14} color={C.ink2} />
+          <Text style={s.footerGhostText}>Edit</Text>
+        </TouchableOpacity>
+      )}
+      {onAddToShowcase && (
+        <TouchableOpacity style={s.footerPrimary} onPress={onAddToShowcase}>
+          <Icon name="image" size={14} color={C.paper} />
+          <Text style={s.footerPrimaryText}>+ Showcase</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  ) : undefined;
+
   return (
-    <Modal open={!!p} onClose={onClose} title={p.title}>
+    <Modal open={!!p} onClose={onClose} title={p.title} footer={footer}>
       {/* Header: creator | collaborators */}
       <View style={s.headerRow}>
         <View style={s.avatar}><Text style={s.avatarText}>{initials}</Text></View>
@@ -76,18 +97,20 @@ export function ProjectDetailModal({ p, onClose }: Props) {
       )}
 
       {/* Stats */}
-      <View style={s.statsRow}>
-        <View style={s.stat}>
-          <Ionicons name="eye-outline" size={14} color={C.muted} />
-          <Text style={s.statLabel}>Views</Text>
-          <Text style={s.statVal}>{p.views}</Text>
+      {!hideStats && (
+        <View style={s.statsRow}>
+          <View style={s.stat}>
+            <Ionicons name="eye-outline" size={14} color={C.muted} />
+            <Text style={s.statLabel}>Views</Text>
+            <Text style={s.statVal}>{p.views}</Text>
+          </View>
+          <TouchableOpacity style={s.stat} onPress={() => onLike?.(p.id)} activeOpacity={0.7}>
+            <Ionicons name={p.liked ? 'heart' : 'heart-outline'} size={14} color={p.liked ? C.red : C.muted} />
+            <Text style={[s.statLabel, p.liked && s.likedLabel]}>Likes</Text>
+            <Text style={[s.statVal, p.liked && s.likedVal]}>{p.likes}</Text>
+          </TouchableOpacity>
         </View>
-        <View style={s.stat}>
-          <Ionicons name="heart-outline" size={14} color={C.muted} />
-          <Text style={s.statLabel}>Likes</Text>
-          <Text style={s.statVal}>{p.likes}</Text>
-        </View>
-      </View>
+      )}
     </Modal>
   );
 }
@@ -113,10 +136,17 @@ const s = StyleSheet.create({
   contactCard: { padding: 14, marginBottom: 16 },
   contactRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   contactText: { fontSize: 13, color: C.ink2, flex: 1, lineHeight: 20 },
+  footerRow: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end', gap: 8 },
+  footerGhost: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: C.line },
+  footerGhostText: { fontSize: 14, fontFamily: F.interMedium, color: C.ink2 },
+  footerPrimary: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, backgroundColor: C.teal600 },
+  footerPrimaryText: { fontSize: 14, fontFamily: F.interMedium, color: C.paper },
   statsRow: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: C.line, borderRadius: 8, padding: 10 },
   statLabel: { fontSize: 12, color: C.muted },
+  likedLabel: { color: C.red },
   statVal: { fontSize: 14, fontFamily: F.mono, color: C.ink, marginLeft: 'auto' as any },
+  likedVal: { color: C.red },
 });
 
 const pill = StyleSheet.create({

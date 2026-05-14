@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { AppProvider, useAppContext } from '@/context/app-context';
 
 function RootLayoutContent() {
@@ -20,7 +21,7 @@ function RootLayoutContent() {
     if (!user && !inAuthGroup) {
       router.replace('/(auth)');
     } else if (user && inAuthGroup) {
-      router.replace('/(tabs)/board');
+      router.replace(user.role === 'recruiter' ? '/(tabs)/recruiter' : '/(tabs)/board');
     }
   }, [ready, user, segments]);
 
@@ -36,6 +37,15 @@ function RootLayoutContent() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  if (!fontsLoaded) return null;
+
   return (
     <AppProvider>
       <RootLayoutContent />

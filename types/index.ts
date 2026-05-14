@@ -80,6 +80,7 @@ export interface Project {
   contactInfo: string;
   media: MediaItem[];
   likes: number;
+  liked?: boolean;
   views: number;
 }
 
