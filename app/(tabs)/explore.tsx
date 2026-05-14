@@ -15,7 +15,8 @@ import { C } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { SEED_INTERVIEWS, SEED_QA, SEED_RESOURCES } from '@/data/seed';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 

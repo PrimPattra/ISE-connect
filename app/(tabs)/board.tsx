@@ -10,7 +10,8 @@ import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import type { Job } from '@/types';
 import { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TYPES = ['All', 'Full-time', 'Internship', 'Freelance', 'Research'];
 const LOCS = ['All', 'Remote', 'Hybrid', 'On-site'];

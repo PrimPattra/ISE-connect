@@ -1,4 +1,4 @@
-import { Modal as RNModal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal as RNModal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Icon } from '@/components/icon';
 import { C, F, Shadow } from '@/constants/theme';
 
@@ -11,22 +11,28 @@ interface Props {
 }
 
 export function Modal({ open, onClose, title, children, footer }: Props) {
+  const { height } = useWindowDimensions();
   return (
     <RNModal visible={open} transparent animationType="fade" onRequestClose={onClose}>
-      <TouchableOpacity style={s.overlay} activeOpacity={1} onPress={onClose}>
-        <TouchableOpacity style={[s.sheet, Shadow.pop]} activeOpacity={1} onPress={() => {}}>
+      <Pressable style={s.overlay} onPress={onClose}>
+        <Pressable style={[s.sheet, Shadow.pop]} onPress={() => {}}>
           <View style={s.header}>
             <Text style={s.title}>{title}</Text>
             <TouchableOpacity onPress={onClose} style={s.closeBtn}>
               <Icon name="x" size={18} color={C.ink2} />
             </TouchableOpacity>
           </View>
-          <ScrollView style={s.body} contentContainerStyle={{ paddingBottom: 8 }}>
+          <ScrollView
+            style={[s.body, { maxHeight: height * 0.6 }]}
+            contentContainerStyle={{ paddingBottom: 8 }}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+          >
             {children}
           </ScrollView>
           {footer && <View style={s.footer}>{footer}</View>}
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </Pressable>
+      </Pressable>
     </RNModal>
   );
 }
