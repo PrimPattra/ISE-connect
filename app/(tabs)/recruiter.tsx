@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatTile } from '@/components/recruiter/stat-tile';
 import { ApplicantRow } from '@/components/recruiter/applicant-row';
 import { ApplicantDetailModal } from '@/components/recruiter/applicant-detail-modal';
