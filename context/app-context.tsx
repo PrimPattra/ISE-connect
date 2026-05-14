@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { SEED_JOBS, SEED_PROJECTS, SEED_REGISTERED_USERS, SEED_REVIEWS } from '@/data/seed';
-import type { Job, Project, Review, User } from '@/types';
+import { SEED_JOBS, SEED_PROJECTS, SEED_REGISTERED_USERS, SEED_RESOURCES, SEED_REVIEWS } from '@/data/seed';
+import type { Job, Project, Resource, Review, User } from '@/types';
 
 const USER_KEY = 'ise_user';
 
@@ -12,6 +12,8 @@ interface AppContextValue {
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
   reviews: Review[];
   setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
+  resources: Resource[];
+  setResources: React.Dispatch<React.SetStateAction<Resource[]>>;
   projects: Project[];
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
   toastMsg: string;
@@ -27,6 +29,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [jobs, setJobs] = useState<Job[]>(SEED_JOBS);
   const [reviews, setReviews] = useState<Review[]>(SEED_REVIEWS);
+  const [resources, setResources] = useState<Resource[]>(SEED_RESOURCES);
   const [projects, setProjects] = useState<Project[]>(SEED_PROJECTS);
   const [toastMsg, setToastMsg] = useState('');
   const [registeredEmails, setRegisteredEmails] = useState<string[]>(SEED_REGISTERED_USERS);
@@ -57,7 +60,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ user, setUser, jobs, setJobs, reviews, setReviews, projects, setProjects, toastMsg, toast, registeredEmails, registerUser, isEmailRegistered }}>
+    <AppContext.Provider value={{ user, setUser, jobs, setJobs, reviews, setReviews, resources, setResources, projects, setProjects, toastMsg, toast, registeredEmails, registerUser, isEmailRegistered }}>
       {children}
     </AppContext.Provider>
   );

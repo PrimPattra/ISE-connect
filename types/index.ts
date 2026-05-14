@@ -52,6 +52,8 @@ export interface Resource {
   title: string;
   author: string;
   mins: number;
+  description?: string;
+  url?: string;
 }
 
 export interface QA {
