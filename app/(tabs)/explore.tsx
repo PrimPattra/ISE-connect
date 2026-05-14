@@ -11,7 +11,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Toast } from '@/components/ui/toast';
 import { Tooltip } from '@/components/ui/tooltip';
-import { C } from '@/constants/theme';
+import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { SEED_INTERVIEWS, SEED_QA, SEED_RESOURCES } from '@/data/seed';
 import { useState } from 'react';
@@ -75,6 +75,8 @@ export default function ReviewsScreen() {
           </Tooltip>
         </View>
 
+        <Text style={s.subheader}>{TABS.find(t => t.id === tab)?.label}</Text>
+
         {tab === 'reviews' && (
           <>
             <Card style={s.searchCard}>
@@ -118,6 +120,7 @@ const s = StyleSheet.create({
   searchInput: { flex: 1, fontSize: 14, color: C.ink },
   salaryToggle: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
   salaryToggleLabel: { fontSize: 13, color: C.ink2 },
+  subheader: { fontFamily: F.interSemiBold, fontSize: 18, color: C.teal600, marginBottom: 12},
   checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper, alignItems: 'center', justifyContent: 'center' },
   checkboxActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
 });
