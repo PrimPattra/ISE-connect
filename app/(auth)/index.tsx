@@ -7,7 +7,8 @@ import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Mode = 'signin' | 'signup';
 type Role = 'hunter' | 'recruiter';

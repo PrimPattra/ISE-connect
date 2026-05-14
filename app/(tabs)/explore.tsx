@@ -7,15 +7,16 @@ import { SalarySection } from '@/components/reviews/salary-section';
 import { WriteReviewModal } from '@/components/reviews/write-review-modal';
 import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
-import { Tooltip } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Toast } from '@/components/ui/toast';
+import { Tooltip } from '@/components/ui/tooltip';
 import { C } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { SEED_INTERVIEWS, SEED_QA, SEED_RESOURCES } from '@/data/seed';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 
@@ -56,13 +57,7 @@ export default function ReviewsScreen() {
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
         <AppLogo />
-        <SectionHeading kicker="02 · Workplace Reviews & Career Tips" title="What it's actually like inside.">
-          <Tooltip label="Write a review">
-            <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
-              <Icon name="plus" size={15} color={C.paper} />
-            </TouchableOpacity>
-          </Tooltip>
-        </SectionHeading>
+        <SectionHeading kicker="02 · Workplace Reviews & Career Tips" title="What it's actually like inside." />
 
         <View style={s.tabRow}>
           {TABS.map(t => (
@@ -72,6 +67,12 @@ export default function ReviewsScreen() {
               </TouchableOpacity>
             </Tooltip>
           ))}
+          <View style={{ flex:1 }} />
+          <Tooltip label="Write a review">
+            <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
+              <Icon name="plus" size={15} color={C.paper} />
+            </TouchableOpacity>
+          </Tooltip>
         </View>
 
         {tab === 'reviews' && (
@@ -86,6 +87,7 @@ export default function ReviewsScreen() {
               <View style={[s.checkbox, showSalaries && s.checkboxActive]}>
                 {showSalaries && <Icon name="check" size={12} color={C.paper} />}
               </View>
+              <Text style={s.salaryToggleLabel}>Salary transparency</Text>
             </TouchableOpacity>
             {showSalaries && <SalarySection reviews={reviews} />}
             {filtered.map(r => <ReviewCard key={r.id} r={r} showSalary={showSalaries} />)}
@@ -107,14 +109,15 @@ export default function ReviewsScreen() {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
-  writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
-  tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
+  writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' },
+  tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14, alignSelf: 'stretch' },
   tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
   tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   searchCard: { padding: 10, marginBottom: 10 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },
-  salaryToggle: { marginBottom: 12 },
+  salaryToggle: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  salaryToggleLabel: { fontSize: 13, color: C.ink2 },
   checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper, alignItems: 'center', justifyContent: 'center' },
   checkboxActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
 });

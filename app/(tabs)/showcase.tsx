@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProjectCard } from '@/components/showcase/project-card';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { AppLogo } from '@/components/ui/app-logo';
