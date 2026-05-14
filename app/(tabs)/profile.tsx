@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AddProjectModal } from '@/components/profile/add-project-modal';
+import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { ProfileStat } from '@/components/profile/profile-stat';
 import { Card } from '@/components/ui/card';
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
   const [addOpen, setAddOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [viewProject, setViewProject] = useState<Project | null>(null);
+  const [viewJob, setViewJob] = useState<typeof jobs[0] | null>(null);
   const [showcaseProject, setShowcaseProject] = useState<Project | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
   if (!user) return null;
@@ -118,13 +120,16 @@ export default function ProfileScreen() {
           {saved.length === 0
             ? <EmptyState icon="bookmark" title="Nothing saved yet." body="Bookmark roles from the board." />
             : saved.map(j => (
-              <View key={j.id} style={s.savedJob}>
+              <TouchableOpacity key={j.id} style={s.savedJob} onPress={() => setViewJob(j)} activeOpacity={0.7}>
                 <View style={s.savedJobInfo}>
                   <Text style={s.savedJobTitle} numberOfLines={1}>{j.title}</Text>
                   <Text style={s.savedJobMeta}>{j.company} · {j.location}</Text>
                 </View>
-                <TagPill>{j.type}</TagPill>
-              </View>
+                <View style={s.savedJobRight}>
+                  <TagPill>{j.type}</TagPill>
+                  <Icon name="arrow-right" size={14} color={C.muted} />
+                </View>
+              </TouchableOpacity>
             ))
           }
         </Card>
@@ -145,11 +150,14 @@ export default function ProfileScreen() {
                     {p.skills.slice(0, 3).map(sk => <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>)}
                   </View>
                 </View>
+                <Icon name="arrow-right" size={14} color={C.muted} />
               </TouchableOpacity>
             ))}
           </View>
         </Card>
       </ScrollView>
+
+      <JobDetailModal job={viewJob} onClose={() => setViewJob(null)} />
 
       <ProjectDetailModal
         p={viewProject}
@@ -244,6 +252,7 @@ const s = StyleSheet.create({
   sectionCount: { fontSize: 12, fontFamily: F.mono, color: C.muted },
   savedJob: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: C.line, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 6 },
   savedJobInfo: { flex: 1, marginRight: 8 },
+  savedJobRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   savedJobTitle: { fontSize: 14, color: C.ink },
   savedJobMeta: { fontSize: 12, color: C.muted, marginTop: 2 },
   addBtn: { padding: 6, borderRadius: 8, borderWidth: 1, borderColor: C.line },

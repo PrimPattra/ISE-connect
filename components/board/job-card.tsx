@@ -77,7 +77,7 @@ const s = StyleSheet.create({
   saveBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line, alignSelf: 'flex-start' },
   saveBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  meta: { flexDirection: 'row', alignItems: 'center', columnGap: 16, rowGap: 4, flexShrink: 1, flexWrap: 'wrap' },
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   metaText: { fontSize: 12, fontFamily: F.mono, color: C.muted },
   posted: { marginLeft: 'auto', fontSize: 12, fontFamily: F.mono, color: C.muted },
