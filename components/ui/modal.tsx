@@ -38,5 +38,5 @@ const s = StyleSheet.create({
   title: { fontSize: 22, fontFamily: F.interSemiBold, color: C.ink, flex: 1 },
   closeBtn: { padding: 6, borderRadius: 6 },
   body: { paddingHorizontal: 20, paddingTop: 16 },
-  footer: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderTopWidth: 1, borderTopColor: C.line, backgroundColor: C.paper2 },
+  footer: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderTopWidth: 1, borderTopColor: C.line, backgroundColor: C.paper2, borderBottomLeftRadius: 16, borderBottomRightRadius: 16 },
 });
