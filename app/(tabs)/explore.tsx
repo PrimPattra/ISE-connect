@@ -4,6 +4,7 @@ import { QACard } from '@/components/reviews/qa-card';
 import { ResourceCard } from '@/components/reviews/resource-card';
 import { ReviewCard } from '@/components/reviews/review-card';
 import { SalarySection } from '@/components/reviews/salary-section';
+import { WriteResourceModal } from '@/components/reviews/write-resource-modal';
 import { WriteReviewModal } from '@/components/reviews/write-review-modal';
 import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
@@ -13,7 +14,7 @@ import { Toast } from '@/components/ui/toast';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
-import { SEED_INTERVIEWS, SEED_QA, SEED_RESOURCES } from '@/data/seed';
+import { SEED_INTERVIEWS, SEED_QA } from '@/data/seed';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,11 +29,12 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 ];
 
 export default function ReviewsScreen() {
-  const { reviews, setReviews, toastMsg, toast } = useAppContext();
+  const { reviews, setReviews, resources, setResources, toastMsg, toast } = useAppContext();
   const [tab, setTab] = useState<Tab>('reviews');
   const [showSalaries, setShowSalaries] = useState(false);
   const [q, setQ] = useState('');
   const [openWrite, setOpenWrite] = useState(false);
+  const [openWriteResource, setOpenWriteResource] = useState(false);
 
   const filtered = reviews.filter(r => !q || `${r.company} ${r.role}`.toLowerCase().includes(q.toLowerCase()));
 
@@ -53,6 +55,21 @@ export default function ReviewsScreen() {
     toast('Review posted anonymously.');
   };
 
+  const submitResource = (d: any) => {
+    const resolvedKind = d.kind === 'other' ? (d.customKind || 'Other') : d.kind;
+    setResources(rs => [{
+      id: 'res' + (rs.length + 1),
+      kind: resolvedKind,
+      title: d.title || 'Untitled resource',
+      author: 'Anonymous · You',
+      mins: 0,
+      description: d.description || undefined,
+      url: d.url || undefined,
+    }, ...rs]);
+    setOpenWriteResource(false);
+    toast('Resource shared.');
+  };
+
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
@@ -68,11 +85,13 @@ export default function ReviewsScreen() {
             </Tooltip>
           ))}
           <View style={{ flex:1 }} />
-          <Tooltip label="Write a review">
-            <TouchableOpacity style={s.writeBtn} onPress={() => setOpenWrite(true)}>
-              <Icon name="plus" size={15} color={C.paper} />
-            </TouchableOpacity>
-          </Tooltip>
+          <TouchableOpacity
+            style={[s.writeBtn, !['reviews', 'resources'].includes(tab) && s.writeBtnDisabled]}
+            onPress={tab === 'reviews' ? () => setOpenWrite(true) : tab === 'resources' ? () => setOpenWriteResource(true) : undefined}
+            activeOpacity={['reviews', 'resources'].includes(tab) ? 0.7 : 1}
+          >
+            <Icon name="plus" size={15} color={['reviews', 'resources'].includes(tab) ? C.paper : C.muted} />
+          </TouchableOpacity>
         </View>
 
         <Text style={s.subheader}>{TABS.find(t => t.id === tab)?.label}</Text>
@@ -98,11 +117,12 @@ export default function ReviewsScreen() {
         )}
 
         {tab === 'interviews' && SEED_INTERVIEWS.map(i => <InterviewCard key={i.id} i={i} />)}
-        {tab === 'resources' && SEED_RESOURCES.map(r => <ResourceCard key={r.id} res={r} />)}
+        {tab === 'resources' && resources.map(r => <ResourceCard key={r.id} res={r} />)}
         {tab === 'qa' && SEED_QA.map(q => <QACard key={q.id} q={q} />)}
       </ScrollView>
 
       <WriteReviewModal open={openWrite} onClose={() => setOpenWrite(false)} onSubmit={submit} />
+      <WriteResourceModal open={openWriteResource} onClose={() => setOpenWriteResource(false)} onSubmit={submitResource} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );
@@ -112,6 +132,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
   writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' },
+  writeBtnDisabled: { backgroundColor: C.line },
   tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14, alignSelf: 'stretch' },
   tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
   tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
