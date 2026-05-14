@@ -80,31 +80,31 @@ export default function ProfileScreen() {
               <Text style={s.email}>{user.profile.email}</Text>
               <View style={s.tags}>
                 <TagPill dark>{user.profile.cohort}</TagPill>
-                <TagPill>{user.profile.track}</TagPill>
+                <TagPill dark>{user.profile.track}</TagPill>
               </View>
             </View>
           </View>
           <Text style={s.headline}>"{user.profile.headline}"</Text>
-          <View style={s.divider} />
+          <View style={s.darkDivider} />
           <View style={s.stats}>
-            <ProfileStat label="Saved" value={saved.length} />
-            <ProfileStat label="Applied" value={3} />
-            <ProfileStat label="Projects" value={projects.length} />
+            <ProfileStat label="Saved" value={saved.length} dark />
+            <ProfileStat label="Applied" value={3} dark />
+            <ProfileStat label="Projects" value={projects.length} dark />
           </View>
-          <View style={s.divider} />
+          <View style={s.darkDivider} />
           <Text style={s.skillsLabel}>Skills</Text>
           <View style={s.skills}>
             {(user.profile.skills || []).map((sk: string) => (
-              <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>
+              <View key={sk} style={chip.darkWrap}><Text style={chip.darkText}>{sk}</Text></View>
             ))}
-            <TouchableOpacity style={chip.add}>
-              <Icon name="plus" size={11} color={C.ink2} />
-              <Text style={chip.addText}>Add</Text>
+            <TouchableOpacity style={chip.darkAdd}>
+              <Icon name="plus" size={11} color={C.paper} />
+              <Text style={chip.darkAddText}>Add</Text>
             </TouchableOpacity>
           </View>
-          <View style={s.divider} />
+          <View style={s.darkDivider} />
           <TouchableOpacity style={s.editBtn}>
-            <Icon name="edit" size={15} color={C.ink2} />
+            <Icon name="edit" size={15} color={C.paper} />
             <Text style={s.editBtnText}>Edit profile</Text>
           </TouchableOpacity>
         </Card>
@@ -220,22 +220,23 @@ export default function ProfileScreen() {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
-  profileCard: { padding: 16, marginBottom: 12 },
+  profileCard: { padding: 16, marginBottom: 12, backgroundColor: C.teal600, borderColor: C.teal600 },
   avatarRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 12 },
-  avatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 16, fontFamily: F.mono, color: C.ink2 },
+  avatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
+  avatarText: { fontSize: 16, fontFamily: F.mono, color: C.paper },
   avatarInfo: { flex: 1 },
-  name: { fontSize: 17, color: C.ink },
-  email: { fontSize: 12, fontFamily: F.mono, color: C.muted, marginTop: 2 },
+  name: { fontSize: 17, color: C.paper },
+  email: { fontSize: 12, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', marginTop: 2 },
   tags: { flexDirection: 'row', gap: 6, marginTop: 6 },
-  headline: { fontSize: 14, fontFamily: F.interMedium, color: C.ink2, lineHeight: 20 },
+  headline: { fontSize: 14, fontFamily: F.interMedium, color: 'rgba(251,251,251,0.85)', lineHeight: 20 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 14 },
+  darkDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.18)', marginVertical: 14 },
   stats: { flexDirection: 'row', gap: 8 },
-  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   signOutBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line },
-  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingVertical: 10 },
-  editBtnText: { fontSize: 14, color: C.ink2 },
+  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingVertical: 10 },
+  editBtnText: { fontSize: 14, color: C.paper },
   section: { padding: 16, marginBottom: 12 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   sectionTitle: { fontSize: 22, fontFamily: F.interSemiBold, color: C.ink },
@@ -263,4 +264,8 @@ const chip = StyleSheet.create({
   text: { fontSize: 11, fontFamily: F.mono, color: C.ink2, fontWeight: 'bold' },
   add: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderStyle: 'dashed', borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
   addText: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
+  darkWrap: { backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  darkText: { fontSize: 11, fontFamily: F.mono, color: C.paper, fontWeight: 'bold' },
+  darkAdd: { flexDirection: 'row', alignItems: 'center', gap: 4, borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  darkAddText: { fontSize: 11, fontFamily: F.mono, color: C.paper },
 });
