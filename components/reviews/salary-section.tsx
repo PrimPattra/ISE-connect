@@ -27,7 +27,7 @@ export function SalarySection({ reviews }: Props) {
       <View style={s.header}>
         <View style={s.headerTop}>
           <View style={{ flex: 1, marginRight: 12 }}>
-            <Text style={s.kicker}>Optional{"\n"}folded into reviews</Text>
+            <Text style={s.kicker}>·Optional{"\n"}·folded into reviews</Text>
           </View>
           <View style={{ flexShrink: 0 }}> 
             <TagPill dark>{withSalary.length} of {reviews.length} shared</TagPill>
