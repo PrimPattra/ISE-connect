@@ -30,7 +30,7 @@ export function Modal({ open, onClose, title, children, footer }: Props) {
           
           <ScrollView
             style={[s.body, { maxHeight: height * 0.6 }]}
-            contentContainerStyle={{ paddingBottom: 8 }}
+            contentContainerStyle={{ paddingBottom: 24 }}
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
           >

@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AddProjectModal } from '@/components/profile/add-project-modal';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
-import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
+import { Icon } from '@/components/icon';
+import { AddProjectModal } from '@/components/profile/add-project-modal';
 import { ProfileStat } from '@/components/profile/profile-stat';
+import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Modal } from '@/components/ui/modal';
-import { Tooltip } from '@/components/ui/tooltip';
-import { Icon } from '@/components/icon';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { TagPill } from '@/components/ui/tag-pill';
-import { useAppContext } from '@/context/app-context';
+import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
+import { useAppContext } from '@/context/app-context';
 import type { Project } from '@/types';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   const { user, setUser, jobs, projects, setProjects, toast } = useAppContext();
