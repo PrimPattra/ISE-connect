@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
 import { TextField } from '@/components/ui/text-field';
-import { Icon } from '@/components/icon';
-import { C } from '@/constants/theme';
+import { C, F } from '@/constants/theme';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FormState {
   title: string;
   skills: string;
   description: string;
   projectLink: string;
+  contactInfo: string;
 }
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
   onEdit?: (data: FormState) => void;
 }
 
-const EMPTY: FormState = { title: '', skills: '', description: '', projectLink: '' };
+const EMPTY: FormState = { title: '', skills: '', description: '', projectLink: '', contactInfo: '' };
 
 export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: Props) {
   const isEdit = !!initialData;
@@ -59,47 +60,63 @@ export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: P
       }
     >
       <View style={m.fields}>
-        <TextField
-          label="Title *"
-          icon="edit"
-          placeholder="e.g. ISE Connect App"
-          value={form.title}
-          onChangeText={v => upd('title', v)}
-          error={error}
-        />
-        <TextField
-          label="Skills"
-          icon="users"
-          placeholder="e.g. React Native, TypeScript"
-          value={form.skills}
-          onChangeText={v => upd('skills', v)}
-          hint="Comma-separated"
-        />
-        <TextField
-          label="Description"
-          placeholder="What did you build and why?"
-          value={form.description}
-          onChangeText={v => upd('description', v)}
-          multiline
-          numberOfLines={3}
-          style={m.multiline}
-        />
-        <TextField
-          label="Project link"
-          icon="doc"
-          placeholder="https://github.com/..."
-          value={form.projectLink}
-          onChangeText={v => upd('projectLink', v)}
-          keyboardType="url"
-          autoCapitalize="none"
-        />
+        <View>
+          <Text style={m.sectionLabel}>Title *</Text>
+          <TextField
+            placeholder="e.g. ISE Connect App"
+            value={form.title}
+            onChangeText={v => upd('title', v)}
+            error={error}
+          />
+        </View>
+        <View>
+          <Text style={m.sectionLabel}>Description</Text>
+          <TextField
+            placeholder="What did you build and why?"
+            value={form.description}
+            onChangeText={v => upd('description', v)}
+            multiline
+            numberOfLines={3}
+            style={m.multiline}
+          />
+        </View>
+        <View>
+          <Text style={m.sectionLabel}>Skills & Tools</Text>
+          <TextField
+            placeholder="e.g. React Native, TypeScript"
+            value={form.skills}
+            onChangeText={v => upd('skills', v)}
+            hint="Comma-separated"
+          />
+        </View>
+        <View>
+          <Text style={m.sectionLabel}>Project Link</Text>
+          <TextField
+            placeholder="https://github.com/..."
+            value={form.projectLink}
+            onChangeText={v => upd('projectLink', v)}
+            keyboardType="url"
+            autoCapitalize="none"
+          />
+        </View>
+        <View>
+          <Text style={m.sectionLabel}>Contact</Text>
+          <TextField
+            placeholder="e.g. your@email.com"
+            value={form.contactInfo}
+            onChangeText={v => upd('contactInfo', v)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
       </View>
     </Modal>
   );
 }
 
 const m = StyleSheet.create({
-  fields: { gap: 12, paddingBottom: 8 },
+  fields: { gap: 16, paddingBottom: 8 },
+  sectionLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   multiline: { height: 80, textAlignVertical: 'top', paddingTop: 10 },
   ghost: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: C.line },
   ghostText: { fontSize: 14, color: C.ink },

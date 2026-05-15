@@ -7,9 +7,10 @@ import type { Project } from '@/types';
 interface Props {
   p: Project;
   onOpen: (p: Project) => void;
+  onLike: (id: string) => void;
 }
 
-export function ProjectCard({ p, onOpen }: Props) {
+export function ProjectCard({ p, onOpen, onLike }: Props) {
   const collaboratorNames = p.collaborators.map(c => c.name).join(', ');
   return (
     <TouchableOpacity onPress={() => onOpen(p)}>
@@ -53,8 +54,10 @@ export function ProjectCard({ p, onOpen }: Props) {
           <View style={s.stats}>
             <Ionicons name="eye-outline" size={13} color={C.muted} />
             <Text style={s.statText}>{p.views}</Text>
-            <Ionicons name="heart-outline" size={13} color={C.muted} />
-            <Text style={s.statText}>{p.likes}</Text>
+            <TouchableOpacity style={s.likeBtn} onPress={() => onLike(p.id)} activeOpacity={0.7}>
+              <Ionicons name={p.liked ? 'heart' : 'heart-outline'} size={13} color={p.liked ? C.red : C.muted} />
+              <Text style={[s.statText, p.liked && s.likedText]}>{p.likes}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Card>
@@ -76,12 +79,14 @@ const s = StyleSheet.create({
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
   linkRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   linkText: { fontSize: 12, color: C.teal600, flex: 1 },
-  footer: { flexDirection: 'row', justifyContent: 'flex-end' },
+  footer: { flexDirection: 'row' },
   stats: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   statText: { fontSize: 12, color: C.muted },
+  likedText: { color: C.red },
 });
 
 const pill = StyleSheet.create({
-  wrap: { backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 },
-  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2 },
+  wrap: { backgroundColor: C.teal50, borderWidth: 1, borderColor: C.line, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
+  text: { fontSize: 11, fontFamily: F.mono, color: C.ink2, fontWeight: 'bold' },
 });

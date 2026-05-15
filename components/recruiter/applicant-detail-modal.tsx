@@ -55,7 +55,7 @@ export function ApplicantDetailModal({ a, onClose, onMove }: Props) {
 const s = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 12 },
   applied: { fontSize: 11, fontFamily: F.mono, color: C.muted },
-  headline: { fontSize: 20, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, lineHeight: 26, marginBottom: 12 },
+  headline: { fontSize: 20, fontFamily: F.interMedium, color: C.ink, lineHeight: 26, marginBottom: 12 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
   sectionLabel: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 4 },
