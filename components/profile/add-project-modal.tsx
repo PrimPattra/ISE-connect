@@ -2,9 +2,9 @@ import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
 import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
+import type { ProjectFormData } from '@/types';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import type { ProjectFormData } from '@/types';
 
 interface Props {
   open: boolean;
