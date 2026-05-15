@@ -7,9 +7,9 @@ import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Modal } from '@/components/ui/modal';
-import { TextField } from '@/components/ui/text-field';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { TagPill } from '@/components/ui/tag-pill';
+import { TextField } from '@/components/ui/text-field';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
@@ -109,7 +109,6 @@ export default function ProfileScreen() {
               <Text style={s.email}>{user.profile.email}</Text>
               <View style={s.tags}>
                 <TagPill dark>{user.profile.cohort}</TagPill>
-                <TagPill dark>{user.profile.track}</TagPill>
               </View>
             </View>
           </View>
@@ -295,14 +294,14 @@ const s = StyleSheet.create({
   name: { fontSize: 17, color: C.paper },
   email: { fontSize: 12, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', marginTop: 2 },
   tags: { flexDirection: 'row', gap: 6, marginTop: 6 },
-  headline: { fontSize: 14, fontFamily: F.interMedium, color: 'rgba(251,251,251,0.85)', lineHeight: 20 },
+  headline: { fontSize: 14, fontFamily: F.inter, color: 'rgba(251,251,251,0.85)', lineHeight: 20 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 14 },
   darkDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.18)', marginVertical: 14 },
   stats: { flexDirection: 'row', gap: 8 },
-  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: C.teal100, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   signOutBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line },
-  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingVertical: 10 },
+  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 0.6, borderColor: C.teal100, borderRadius: 10, paddingVertical: 10 },
   editBtnText: { fontSize: 14, color: C.paper },
   section: { padding: 16, marginBottom: 12 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },

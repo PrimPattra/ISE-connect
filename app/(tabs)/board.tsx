@@ -115,7 +115,7 @@ const s = StyleSheet.create({
   hero: { backgroundColor: C.teal600, borderRadius: 16, padding: 20, marginBottom: 20 },
   heroKicker: { fontSize: 11, fontFamily: F.mono, color: 'rgba(244,240,232,0.7)', textTransform: 'uppercase', letterSpacing: 1.4, marginBottom: 8 },
   heroTitle: { fontSize: 32, fontFamily: F.interSemiBold, color: C.paper, lineHeight: 36 },
-  heroSub: { color: 'rgba(244,240,232,0.85)' },
+  heroSub: { fontSize: 28 ,color: 'rgba(244,240,232,0.85)' },
   filterCard: { padding: 12, marginBottom: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },
