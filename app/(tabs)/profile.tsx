@@ -11,7 +11,7 @@ import { TagPill } from '@/components/ui/tag-pill';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
-import type { Project } from '@/types';
+import type { Project, ProjectFormData } from '@/types';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,12 +29,12 @@ export default function ProfileScreen() {
   const saved = jobs.filter(j => j.saved);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
-  const handleAddProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
+  const handleAddProject = (data: ProjectFormData) => {
     setProjects(ps => [{
       id: 'pp' + (ps.length + 1),
       title: data.title,
       by: { name: user.profile.name, tag: user.profile.cohort || 'ISE' },
-      collaborators: [],
+      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || 'No description provided.',
       projectLink: data.projectLink,
@@ -45,11 +45,12 @@ export default function ProfileScreen() {
     toast('Project added.');
   };
 
-  const handleEditProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
+  const handleEditProject = (data: ProjectFormData) => {
     if (!editProject) return;
     setProjects(ps => ps.map(p => p.id === editProject.id ? {
       ...p,
       title: data.title,
+      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || p.description,
       projectLink: data.projectLink,
@@ -178,6 +179,7 @@ export default function ProfileScreen() {
           description: editProject.description,
           projectLink: editProject.projectLink ?? '',
           contactInfo: editProject.contactInfo ?? '',
+          collaborators: editProject.collaborators.map(c => c.name).join(', '),
         } : undefined}
         onEdit={handleEditProject}
       />
