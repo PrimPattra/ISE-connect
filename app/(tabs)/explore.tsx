@@ -16,8 +16,10 @@ import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { SEED_INTERVIEWS, SEED_QA } from '@/data/seed';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { LayoutAnimation, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
 type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 
@@ -84,8 +86,15 @@ export default function ReviewsScreen() {
         <View style={s.tabRow}>
           {TABS.map(t => (
             <Tooltip key={t.id} label={t.label}>
-              <TouchableOpacity style={[s.tabBtn, tab === t.id && s.tabBtnActive]} onPress={() => setTab(t.id)}>
+              <TouchableOpacity
+                style={[s.tabBtn, tab === t.id ? s.tabBtnActive : s.tabBtnInactive]}
+                onPress={() => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                  setTab(t.id);
+                }}
+              >
                 <Icon name={t.icon} size={14} color={tab === t.id ? C.paper : C.teal600} />
+                {tab === t.id && <Text style={s.tabBtnText}>{t.label}</Text>}
               </TouchableOpacity>
             </Tooltip>
           ))}
@@ -98,8 +107,6 @@ export default function ReviewsScreen() {
             <Icon name="plus" size={15} color={['reviews', 'resources'].includes(tab) ? C.paper : C.muted} />
           </TouchableOpacity>
         </View>
-
-        <Text style={s.subheader}>{TABS.find(t => t.id === tab)?.label}</Text>
 
         {tab === 'reviews' && (
           <>
@@ -139,8 +146,10 @@ const s = StyleSheet.create({
   writeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center', marginLeft: 'auto' },
   writeBtnDisabled: { backgroundColor: C.line },
   tabRow: { flexDirection: 'row', gap: 8, marginBottom: 14, alignSelf: 'stretch' },
-  tabBtn: { width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
-  tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
+  tabBtn: { height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
+  tabBtnInactive: { width: 40 },
+  tabBtnActive: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, borderRadius: 18, backgroundColor: C.teal600, borderColor: C.teal600 },
+  tabBtnText: { fontSize: 13, color: C.paper, fontFamily: F.interSemiBold },
   searchCard: { padding: 10, marginBottom: 10 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },
