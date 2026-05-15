@@ -54,6 +54,7 @@ export interface Resource {
   mins: number;
   description?: string;
   url?: string;
+  image?: string;
 }
 
 export interface QA {

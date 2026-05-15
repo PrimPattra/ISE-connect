@@ -3,6 +3,7 @@ import { Icon } from '@/components/icon';
 import { Card } from '@/components/ui/card';
 import { TagPill } from '@/components/ui/tag-pill';
 import { C, F } from '@/constants/theme';
+import { Image } from 'expo-image';
 import type { Resource } from '@/types';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -18,7 +19,10 @@ export function ResourceCard({ res }: Props) {
       <TouchableOpacity activeOpacity={0.75} onPress={() => setOpen(true)}>
         <Card style={s.card}>
           <View style={s.thumb}>
-            <Icon name={iconName} size={20} color={C.muted} />
+            {res.image
+              ? <Image source={{ uri: res.image }} style={s.thumbImg} contentFit="cover" />
+              : <Icon name={iconName} size={20} color={C.muted} />
+            }
           </View>
           <View style={s.info}>
             <View style={s.row}>
@@ -42,7 +46,8 @@ export function ResourceCard({ res }: Props) {
 
 const s = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12, marginBottom: 8 },
-  thumb: { width: 52, height: 52, borderRadius: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  thumb: { width: 52, height: 52, borderRadius: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  thumbImg: { width: 52, height: 52 },
   info: { flex: 1 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   mins: { fontSize: 11, fontFamily: F.mono, color: C.muted },

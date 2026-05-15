@@ -29,7 +29,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 ];
 
 export default function ReviewsScreen() {
-  const { reviews, setReviews, resources, setResources, toastMsg, toast } = useAppContext();
+  const { user, reviews, setReviews, resources, setResources, toastMsg, toast } = useAppContext();
   const [tab, setTab] = useState<Tab>('reviews');
   const [showSalaries, setShowSalaries] = useState(false);
   const [q, setQ] = useState('');
@@ -61,10 +61,15 @@ export default function ReviewsScreen() {
       id: 'res' + (rs.length + 1),
       kind: resolvedKind,
       title: d.title || 'Untitled resource',
-      author: 'Anonymous · You',
+      author: user
+        ? user.profile.cohort
+          ? `${user.profile.name} · ${user.profile.cohort}`
+          : user.profile.name
+        : 'Anonymous',
       mins: 0,
       description: d.description || undefined,
       url: d.url || undefined,
+      image: d.image || undefined,
     }, ...rs]);
     setOpenWriteResource(false);
     toast('Resource shared.');
