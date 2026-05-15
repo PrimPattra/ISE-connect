@@ -291,15 +291,18 @@ export default function AuthScreen() {
         onClose={() => setShowConfirm(false)}
         title="Almost there!"
         footer={
-          <>
-            <TouchableOpacity style={[cf.btn, cf.ghost]} onPress={() => setShowConfirm(false)}>
-              <Text style={cf.ghostText}>Go back & edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[cf.btn, cf.primary]} onPress={finish}>
-              <Text style={cf.primaryText}>Confirm & enter</Text>
-              <Icon name="check" size={15} color={C.paper} />
-            </TouchableOpacity>
-          </>
+          <View style={cf.footerCol}>
+            <Text style={cf.warning}>This info cannot be changed later.</Text>
+            <View style={cf.footerBtns}>
+              <TouchableOpacity style={[cf.btn, cf.ghost]} onPress={() => setShowConfirm(false)}>
+                <Text style={cf.ghostText}>Go back & edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[cf.btn, cf.primary]} onPress={finish}>
+                <Text style={cf.primaryText}>Confirm & enter</Text>
+                <Icon name="check" size={15} color={C.paper} />
+              </TouchableOpacity>
+            </View>
+          </View>
         }
       >
         <Text style={cf.section}>Review your details</Text>
@@ -318,7 +321,7 @@ export default function AuthScreen() {
         ))}
         {role === 'recruiter' && (
           <>
-            <View style={cf.divider} />
+            <View style={{ height: 16 }} />
             {([
               ['Title', form.position],
               ['Company', form.company],
@@ -373,4 +376,7 @@ const cf = StyleSheet.create({
   ghostText: { fontSize: 14, color: C.ink },
   primary: { backgroundColor: C.teal600 },
   primaryText: { fontSize: 14, color: C.paper, fontWeight: '500' },
+  footerCol: { width: '100%', gap: 8 },
+  footerBtns: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  warning: { fontSize: 11, fontFamily: F.mono, color: C.muted, textAlign: 'center', marginBottom: 0 },
 });

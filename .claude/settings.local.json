@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"D:\\\\CU\\\\2-2\\\\AppDev\\\\NetworkProject\\\\ISE-connect\" -Recurse -Directory)",
+      "Bash(Select-Object -First 30)",
+      "Bash(Format-Table FullName)"
+    ]
+  }
+}

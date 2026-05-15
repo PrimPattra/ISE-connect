@@ -70,6 +70,15 @@ export interface MediaItem {
   label: string;
 }
 
+export interface ProjectFormData {
+  title: string;
+  description: string;
+  skills: string;
+  projectLink: string;
+  contactInfo: string;
+  collaborators: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -115,6 +124,7 @@ export interface UserProfile {
   track?: string;
   headline?: string;
   skills?: string[];
+  avatarColor?: string;
   // recruiter fields
   company?: string;
   companyTag?: string;

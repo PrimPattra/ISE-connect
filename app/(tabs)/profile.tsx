@@ -1,6 +1,7 @@
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
 import { AddProjectModal } from '@/components/profile/add-project-modal';
+import { EditProfileModal } from '@/components/profile/edit-profile-modal';
 import { ProfileStat } from '@/components/profile/profile-stat';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
 import { Card } from '@/components/ui/card';
@@ -8,11 +9,12 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Modal } from '@/components/ui/modal';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { TagPill } from '@/components/ui/tag-pill';
+import { TextField } from '@/components/ui/text-field';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
-import type { Project } from '@/types';
-import { useState } from 'react';
+import type { Project, ProjectFormData } from '@/types';
+import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -24,17 +26,23 @@ export default function ProfileScreen() {
   const [viewJob, setViewJob] = useState<typeof jobs[0] | null>(null);
   const [showcaseProject, setShowcaseProject] = useState<Project | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [addSkillOpen, setAddSkillOpen] = useState(false);
+  const [newSkill, setNewSkill] = useState('');
+  const scrollRef = useRef<ScrollView>(null);
+  const savedY = useRef(0);
+  const portfolioY = useRef(0);
   if (!user) return null;
 
   const saved = jobs.filter(j => j.saved);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
-  const handleAddProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
+  const handleAddProject = (data: ProjectFormData) => {
     setProjects(ps => [{
       id: 'pp' + (ps.length + 1),
       title: data.title,
       by: { name: user.profile.name, tag: user.profile.cohort || 'ISE' },
-      collaborators: [],
+      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || 'No description provided.',
       projectLink: data.projectLink,
@@ -45,11 +53,12 @@ export default function ProfileScreen() {
     toast('Project added.');
   };
 
-  const handleEditProject = (data: { title: string; skills: string; description: string; projectLink: string; contactInfo: string }) => {
+  const handleEditProject = (data: ProjectFormData) => {
     if (!editProject) return;
     setProjects(ps => ps.map(p => p.id === editProject.id ? {
       ...p,
       title: data.title,
+      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
       skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
       description: data.description || p.description,
       projectLink: data.projectLink,
@@ -59,6 +68,23 @@ export default function ProfileScreen() {
     setEditProject(null);
   };
 
+  const handleSaveProfile = ({ headline, avatarColor }: { headline: string; avatarColor: string }) => {
+    setUser({ ...user, profile: { ...user.profile, headline, avatarColor } });
+    toast('Profile updated.');
+  };
+
+  const handleAddSkill = () => {
+    const skill = newSkill.trim();
+    if (!skill) return;
+    const current = user.profile.skills ?? [];
+    if (!current.includes(skill)) {
+      setUser({ ...user, profile: { ...user.profile, skills: [...current, skill] } });
+    }
+    setNewSkill('');
+    setAddSkillOpen(false);
+    toast('Skill added.');
+  };
+
   const handleAddToShowcase = () => {
     toast(`"${showcaseProject?.title}" added to Showcase.`);
     setShowcaseProject(null);
@@ -66,7 +92,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
-      <ScrollView contentContainerStyle={s.scroll}>
+      <ScrollView ref={scrollRef} contentContainerStyle={s.scroll}>
         <SectionHeading kicker="Your profile" title={`${user.profile.name}.`}>
           <Tooltip label="Sign out">
             <TouchableOpacity style={s.signOutBtn} onPress={() => setSignOutOpen(true)}>
@@ -77,13 +103,12 @@ export default function ProfileScreen() {
 
         <Card style={s.profileCard}>
           <View style={s.avatarRow}>
-            <View style={s.avatar}><Text style={s.avatarText}>{initials}</Text></View>
+            <View style={[s.avatar, user.profile.avatarColor ? { backgroundColor: user.profile.avatarColor } : null]}><Text style={s.avatarText}>{initials}</Text></View>
             <View style={s.avatarInfo}>
               <Text style={s.name}>{user.profile.name}</Text>
               <Text style={s.email}>{user.profile.email}</Text>
               <View style={s.tags}>
                 <TagPill dark>{user.profile.cohort}</TagPill>
-                <TagPill dark>{user.profile.track}</TagPill>
               </View>
             </View>
           </View>
@@ -100,13 +125,13 @@ export default function ProfileScreen() {
             {(user.profile.skills || []).map((sk: string) => (
               <View key={sk} style={chip.darkWrap}><Text style={chip.darkText}>{sk}</Text></View>
             ))}
-            <TouchableOpacity style={chip.darkAdd}>
+            <TouchableOpacity style={chip.darkAdd} onPress={() => setAddSkillOpen(true)}>
               <Icon name="plus" size={11} color={C.paper} />
               <Text style={chip.darkAddText}>Add</Text>
             </TouchableOpacity>
           </View>
           <View style={s.darkDivider} />
-          <TouchableOpacity style={s.editBtn}>
+          <TouchableOpacity style={s.editBtn} onPress={() => setEditProfileOpen(true)}>
             <Icon name="edit" size={15} color={C.paper} />
             <Text style={s.editBtnText}>Edit profile</Text>
           </TouchableOpacity>
@@ -178,9 +203,41 @@ export default function ProfileScreen() {
           description: editProject.description,
           projectLink: editProject.projectLink ?? '',
           contactInfo: editProject.contactInfo ?? '',
+          collaborators: editProject.collaborators.map(c => c.name).join(', '),
         } : undefined}
         onEdit={handleEditProject}
       />
+
+      <EditProfileModal
+        open={editProfileOpen}
+        onClose={() => setEditProfileOpen(false)}
+        user={user}
+        onSave={handleSaveProfile}
+      />
+
+      <Modal
+        open={addSkillOpen}
+        onClose={() => { setAddSkillOpen(false); setNewSkill(''); }}
+        title="Add skill"
+        footer={
+          <>
+            <TouchableOpacity style={s.ghostBtn} onPress={() => { setAddSkillOpen(false); setNewSkill(''); }}>
+              <Text style={s.ghostBtnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.primaryBtn} onPress={handleAddSkill}>
+              <Text style={s.primaryBtnText}>Add</Text>
+              <Icon name="plus" size={14} color={C.paper} />
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <TextField
+          placeholder="e.g. React Native"
+          value={newSkill}
+          onChangeText={setNewSkill}
+          autoFocus
+        />
+      </Modal>
 
       <Modal
         open={signOutOpen}
@@ -237,14 +294,14 @@ const s = StyleSheet.create({
   name: { fontSize: 17, color: C.paper },
   email: { fontSize: 12, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', marginTop: 2 },
   tags: { flexDirection: 'row', gap: 6, marginTop: 6 },
-  headline: { fontSize: 14, fontFamily: F.interMedium, color: 'rgba(251,251,251,0.85)', lineHeight: 20 },
+  headline: { fontSize: 14, fontFamily: F.inter, color: 'rgba(251,251,251,0.85)', lineHeight: 20 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 14 },
   darkDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.18)', marginVertical: 14 },
   stats: { flexDirection: 'row', gap: 8 },
-  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: 'rgba(251,251,251,0.6)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+  skillsLabel: { fontSize: 11, fontFamily: F.mono, color: C.teal100, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
   skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   signOutBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line },
-  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingVertical: 10 },
+  editBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 0.6, borderColor: C.teal100, borderRadius: 10, paddingVertical: 10 },
   editBtnText: { fontSize: 14, color: C.paper },
   section: { padding: 16, marginBottom: 12 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },

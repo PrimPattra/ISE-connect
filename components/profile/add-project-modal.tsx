@@ -2,33 +2,26 @@ import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
 import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
+import type { ProjectFormData } from '@/types';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-interface FormState {
-  title: string;
-  skills: string;
-  description: string;
-  projectLink: string;
-  contactInfo: string;
-}
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onAdd: (data: FormState) => void;
-  initialData?: FormState;
-  onEdit?: (data: FormState) => void;
+  onAdd: (data: ProjectFormData) => void;
+  initialData?: ProjectFormData;
+  onEdit?: (data: ProjectFormData) => void;
 }
 
-const EMPTY: FormState = { title: '', skills: '', description: '', projectLink: '', contactInfo: '' };
+const EMPTY: ProjectFormData = { title: '', description: '', skills: '', projectLink: '', contactInfo: '', collaborators: '' };
 
 export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: Props) {
   const isEdit = !!initialData;
-  const [form, setForm] = useState<FormState>(initialData ?? EMPTY);
+  const [form, setForm] = useState<ProjectFormData>(initialData ?? EMPTY);
   const [error, setError] = useState('');
 
-  const upd = (k: keyof FormState, v: string) => {
+  const upd = (k: keyof ProjectFormData, v: string) => {
     setForm(f => ({ ...f, [k]: v }));
     setError('');
   };
@@ -67,6 +60,15 @@ export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: P
             value={form.title}
             onChangeText={v => upd('title', v)}
             error={error}
+          />
+        </View>
+        <View>
+          <Text style={m.sectionLabel}>Collaborators</Text>
+          <TextField
+            placeholder="e.g. Alice, Bob"
+            value={form.collaborators}
+            onChangeText={v => upd('collaborators', v)}
+            hint="Comma-separated names (optional)"
           />
         </View>
         <View>
