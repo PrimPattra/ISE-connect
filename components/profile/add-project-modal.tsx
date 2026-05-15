@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
 import { TextField } from '@/components/ui/text-field';
-import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface FormState {
   title: string;
