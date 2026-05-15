@@ -321,7 +321,7 @@ export default function AuthScreen() {
         ))}
         {role === 'recruiter' && (
           <>
-            <View style={cf.divider} />
+            <View style={{ height: 16 }} />
             {([
               ['Title', form.position],
               ['Company', form.company],
