@@ -16,10 +16,8 @@ import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { SEED_INTERVIEWS, SEED_QA } from '@/data/seed';
 import { useState } from 'react';
-import { LayoutAnimation, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native';
+import { LayoutAnimation, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental?.(true);
 
 type Tab = 'reviews' | 'interviews' | 'resources' | 'qa';
 

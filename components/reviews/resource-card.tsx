@@ -1,10 +1,10 @@
-import { ResourceDetailModal } from '@/components/reviews/resource-detail-modal';
 import { Icon } from '@/components/icon';
+import { ResourceDetailModal } from '@/components/reviews/resource-detail-modal';
 import { Card } from '@/components/ui/card';
 import { TagPill } from '@/components/ui/tag-pill';
 import { C, F } from '@/constants/theme';
-import { Image } from 'expo-image';
 import type { Resource } from '@/types';
+import { Image } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -21,7 +21,7 @@ export function ResourceCard({ res }: Props) {
           <View style={s.thumb}>
             {res.image
               ? <Image source={{ uri: res.image }} style={s.thumbImg} contentFit="cover" />
-              : <Icon name={iconName} size={20} color={C.muted} />
+              : <Icon name={iconName} size={28} color={C.muted} />
             }
           </View>
           <View style={s.info}>
@@ -46,8 +46,8 @@ export function ResourceCard({ res }: Props) {
 
 const s = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12, marginBottom: 8 },
-  thumb: { width: 52, height: 52, borderRadius: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  thumbImg: { width: 52, height: 52 },
+  thumb: { width: 80, height: 80, borderRadius: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  thumbImg: { width: 80, height: 80 },
   info: { flex: 1 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   mins: { fontSize: 11, fontFamily: F.mono, color: C.muted },
