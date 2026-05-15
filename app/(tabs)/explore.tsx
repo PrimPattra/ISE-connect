@@ -150,7 +150,7 @@ const s = StyleSheet.create({
   tabBtnText: { fontSize: 13, color: C.paper, fontFamily: F.interSemiBold },
   searchCard: { padding: 10, marginBottom: 10 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  searchInput: { flex: 1, fontSize: 14, color: C.ink },
+  searchInput: { flex: 1, fontSize: 14, color: C.ink, paddingVertical: 0 },
   salaryToggle: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
   salaryToggleLabel: { fontSize: 13, color: C.ink2 },
   subheader: { fontFamily: F.interSemiBold, fontSize: 18, color: C.teal600, marginBottom: 12},
