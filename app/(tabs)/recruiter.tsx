@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatTile } from '@/components/recruiter/stat-tile';
 import { ApplicantRow } from '@/components/recruiter/applicant-row';
 import { ApplicantDetailModal } from '@/components/recruiter/applicant-detail-modal';
@@ -8,7 +9,9 @@ import { CandidateSearch } from '@/components/recruiter/candidate-search';
 import { PostRoleModal } from '@/components/recruiter/post-role-modal';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Card } from '@/components/ui/card';
+import { Modal } from '@/components/ui/modal';
 import { Toast } from '@/components/ui/toast';
+import { Tooltip } from '@/components/ui/tooltip';
 import { Icon } from '@/components/icon';
 import { useAppContext } from '@/context/app-context';
 import { SEED_APPLICANTS } from '@/data/seed';
@@ -24,10 +27,11 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 ];
 
 export default function RecruiterScreen() {
-  const { user, jobs, setJobs, toastMsg, toast } = useAppContext();
+  const { user, setUser, jobs, setJobs, toastMsg, toast } = useAppContext();
   const [tab, setTab] = useState<Tab>('dashboard');
   const [openPost, setOpenPost] = useState(false);
   const [openA, setOpenA] = useState<Applicant | null>(null);
+  const [signOutOpen, setSignOutOpen] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>(SEED_APPLICANTS);
 
   const myJobIds = useMemo(() => {
@@ -82,6 +86,11 @@ export default function RecruiterScreen() {
             <Icon name="plus" size={15} color={C.paper} />
             <Text style={s.postBtnText}>Post a role</Text>
           </TouchableOpacity>
+          <Tooltip label="Sign out">
+            <TouchableOpacity style={s.signOutBtn} onPress={() => setSignOutOpen(true)}>
+              <Icon name="logout" size={16} color={C.muted} />
+            </TouchableOpacity>
+          </Tooltip>
         </SectionHeading>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tabScroll}>
@@ -98,12 +107,12 @@ export default function RecruiterScreen() {
         {tab === 'dashboard' && (
           <>
             <View style={s.tiles}>
-              <StatTile label="Open roles" value={myJobs.length} sub="Listed on the board" />
-              <StatTile label="New applicants" value={newCount} sub="Need first review" accent={newCount > 0} />
+              <StatTile label="Open roles" value={myJobs.length} sub="Listed on the board" icon="briefcase" />
+              <StatTile label="New applicants" value={newCount} sub="Need first review" accent={newCount > 0} icon="users" />
             </View>
             <View style={s.tiles}>
-              <StatTile label="In hiring loop" value={inLoop} sub="Reviewing or interviewing" />
-              <StatTile label="Hired this cycle" value={hired} sub="Welcome to the team" />
+              <StatTile label="In hiring loop" value={inLoop} sub="Reviewing or interviewing" icon="send" />
+              <StatTile label="Hired this cycle" value={hired} sub="Welcome to the team" icon="star" />
             </View>
 
             <Card style={s.recentCard}>
@@ -158,6 +167,25 @@ export default function RecruiterScreen() {
         {tab === 'candidates' && <CandidateSearch applicants={applicants} />}
       </ScrollView>
 
+      <Modal
+        open={signOutOpen}
+        onClose={() => setSignOutOpen(false)}
+        title="Sign out?"
+        footer={
+          <>
+            <TouchableOpacity style={s.ghostBtn} onPress={() => setSignOutOpen(false)}>
+              <Text style={s.ghostBtnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.signOutConfirmBtn} onPress={() => setUser(null)}>
+              <Icon name="logout" size={14} color={C.paper} />
+              <Text style={s.signOutConfirmText}>Sign out</Text>
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <Text style={s.confirmText}>You'll be returned to the sign-in screen.</Text>
+      </Modal>
+
       <PostRoleModal
         open={openPost}
         onClose={() => setOpenPost(false)}
@@ -175,23 +203,24 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
   postBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.teal600, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 },
+  signOutBtn: { padding: 8, borderRadius: 8, borderWidth: 1, borderColor: C.line },
   postBtnText: { fontSize: 13, fontWeight: '500', color: C.paper },
   tabScroll: { marginBottom: 14 },
   tabRow: { flexDirection: 'row', gap: 8 },
   tabBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
-  tabBtnActive: { backgroundColor: C.ink, borderColor: C.ink },
+  tabBtnActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
   tabText: { fontSize: 13, color: C.ink2 },
   tabTextActive: { color: C.paper },
   tiles: { flexDirection: 'row', gap: 10, marginBottom: 10 },
   recentCard: { padding: 16, marginTop: 4, marginBottom: 10 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  cardTitle: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink },
+  cardTitle: { fontSize: 22, fontFamily: F.interSemiBold, color: C.ink },
   viewAll: { fontSize: 12, color: C.teal600 },
   empty: { padding: 20, alignItems: 'center' },
   emptyText: { fontSize: 13, color: C.muted },
   companyCard: { padding: 16, marginBottom: 10 },
   compKicker: { fontSize: 11, fontFamily: F.mono, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
-  compName: { fontSize: 22, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginTop: 4 },
+  compName: { fontSize: 22, fontFamily: F.interSemiBold, color: C.ink, marginTop: 4 },
   compTag: { fontSize: 13, color: C.muted, marginTop: 2 },
   divider: { height: 1, backgroundColor: C.line, marginVertical: 12 },
   dl: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
@@ -200,4 +229,9 @@ const s = StyleSheet.create({
   emptyCenter: { alignItems: 'center', paddingVertical: 48, gap: 12 },
   emptyTitle: { fontSize: 18, color: C.muted },
   postBtn2: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.teal600, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
+  ghostBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: C.line },
+  ghostBtnText: { fontSize: 14, color: C.ink },
+  signOutConfirmBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, backgroundColor: C.ink },
+  signOutConfirmText: { fontSize: 14, color: C.paper, fontWeight: '500' },
+  confirmText: { fontSize: 14, color: C.muted, lineHeight: 22 },
 });

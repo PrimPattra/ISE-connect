@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProjectCard } from '@/components/showcase/project-card';
 import { ProjectDetailModal } from '@/components/showcase/project-detail-modal';
+import { AppLogo } from '@/components/ui/app-logo';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Toast } from '@/components/ui/toast';
@@ -13,36 +15,29 @@ import type { Project } from '@/types';
 
 export default function ShowcaseScreen() {
   const { user, projects, setProjects, toastMsg, toast } = useAppContext();
-  const [open, setOpen] = useState<Project | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const open = openId ? (projects.find(p => p.id === openId) ?? null) : null;
   const [q, setQ] = useState('');
 
   const filtered = projects.filter(p => !q || `${p.title} ${p.skills.join(' ')}`.toLowerCase().includes(q.toLowerCase()));
 
-  const addProject = () => {
-    const np: Project = {
-      id: 'pn' + (projects.length + 1),
-      title: 'Untitled — new project',
-      by: { name: user?.profile.name || 'You', tag: user?.profile.cohort || 'ICE' },
-      collaborators: [],
-      skills: ['Add skills'],
-      description: 'A new project draft. Tap to expand and fill in details.',
-      projectLink: '',
-      contactInfo: user?.profile.email || '',
-      media: [{ kind: 'image', label: 'Cover image' }, { kind: 'link', label: 'Add a link' }],
-      likes: 0, views: 0,
-    };
-    setProjects(ps => [np, ...ps]);
-    toast('Project draft created.');
+  const toggleLike = (id: string) => {
+    setProjects(ps => ps.map(p => p.id === id
+      ? { ...p, liked: !p.liked, likes: p.liked ? p.likes - 1 : p.likes + 1 }
+      : p
+    ));
+  };
+
+  const openProject = (id: string) => {
+    setOpenId(id);
+    setProjects(ps => ps.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
   };
 
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
-        <SectionHeading kicker="03 · Project Showcase & Portfolio" title="Work made by ISE.">
-          <TouchableOpacity style={s.addBtn} onPress={addProject}>
-            <Icon name="plus" size={15} color={C.paper} />
-          </TouchableOpacity>
-        </SectionHeading>
+        <AppLogo />
+        <SectionHeading kicker="03 · Project Showcase & Portfolio" title="Work made by ISE." />
 
         <Card style={s.searchCard}>
           <View style={s.searchRow}>
@@ -57,13 +52,13 @@ export default function ShowcaseScreen() {
           </View>
         </Card>
 
-        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={setOpen} />)}
+        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={p => openProject(p.id)} onLike={toggleLike} />)}
         {filtered.length === 0 && (
           <EmptyState icon="image" title="No projects found." body="Try clearing the search or add a new project." />
         )}
       </ScrollView>
 
-      <ProjectDetailModal p={open} onClose={() => setOpen(null)} />
+      <ProjectDetailModal p={open} onClose={() => setOpenId(null)} onLike={toggleLike} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );
@@ -72,7 +67,6 @@ export default function ShowcaseScreen() {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.paper },
   scroll: { padding: 16, paddingBottom: 32 },
-  addBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
   searchCard: { padding: 10, marginBottom: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   searchInput: { flex: 1, fontSize: 14, color: C.ink },

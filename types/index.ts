@@ -52,6 +52,9 @@ export interface Resource {
   title: string;
   author: string;
   mins: number;
+  description?: string;
+  url?: string;
+  image?: string;
 }
 
 export interface QA {
@@ -78,6 +81,7 @@ export interface Project {
   contactInfo: string;
   media: MediaItem[];
   likes: number;
+  liked?: boolean;
   views: number;
 }
 

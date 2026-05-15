@@ -7,7 +7,8 @@ import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Mode = 'signin' | 'signup';
 type Role = 'hunter' | 'recruiter';
@@ -341,7 +342,7 @@ const s = StyleSheet.create({
   logoIcon: { width: 32, height: 32, borderRadius: 8, backgroundColor: C.teal600, alignItems: 'center', justifyContent: 'center' },
   logoText: { fontSize: 18, fontWeight: '500', color: C.ink },
   stepperWrap: { marginBottom: 20 },
-  heading: { fontSize: 36, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, lineHeight: 40, marginBottom: 6 },
+  heading: { fontSize: 36, fontFamily: F.interBold, color: C.ink, lineHeight: 40, marginBottom: 6 },
   subheading: { fontSize: 14, color: C.muted, marginBottom: 20, lineHeight: 20 },
   fields: { gap: 12, marginBottom: 20 },
   roleCards: { gap: 12, marginBottom: 20 },

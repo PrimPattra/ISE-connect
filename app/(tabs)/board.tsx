@@ -1,6 +1,7 @@
 import { JobCard } from '@/components/board/job-card';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
+import { AppLogo } from '@/components/ui/app-logo';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -9,13 +10,15 @@ import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import type { Job } from '@/types';
 import { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TYPES = ['All', 'Full-time', 'Internship', 'Freelance', 'Research'];
 const LOCS = ['All', 'Remote', 'Hybrid', 'On-site'];
 
 export default function BoardScreen() {
   const { user, jobs, setJobs, toastMsg, toast } = useAppContext();
+  const isRecruiter = user?.role === 'recruiter';
   const [q, setQ] = useState('');
   const [type, setType] = useState('All');
   const [loc, setLoc] = useState('All');
@@ -33,6 +36,7 @@ export default function BoardScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.scroll}>
+        <AppLogo />
         {user?.role === 'hunter' && (
           <View style={s.hero}>
             <Text style={s.heroKicker}>Welcome back · {user.profile.cohort}</Text>
@@ -61,7 +65,11 @@ export default function BoardScreen() {
                   <Text style={[s.chipText, type === t && s.chipTextActive]}>{t}</Text>
                 </TouchableOpacity>
               ))}
-              <Text style={[s.filterLabel, { marginLeft: 12 }]}>Location</Text>
+            </View>
+          </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.filterScroll}>
+            <View style={s.filterRow}>
+              <Text style={s.filterLabel}>Location</Text>
               {LOCS.map(l => (
                 <TouchableOpacity key={l} style={[s.chip, loc === l && s.chipActive]} onPress={() => setLoc(l)}>
                   <Text style={[s.chipText, loc === l && s.chipTextActive]}>{l}</Text>
@@ -71,7 +79,16 @@ export default function BoardScreen() {
           </ScrollView>
         </Card>
 
-        {filtered.map(j => <JobCard key={j.id} job={j} onOpen={setOpen} onSave={toggleSave} />)}
+        {filtered.map(j => (
+          <JobCard
+            key={j.id}
+            job={j}
+            onOpen={setOpen}
+            onSave={toggleSave}
+            isRecruiter={isRecruiter}
+            isOwnPosting={isRecruiter && j.company === user?.profile?.company}
+          />
+        ))}
         {filtered.length === 0 && (
           <EmptyState
             icon="search"
@@ -86,7 +103,7 @@ export default function BoardScreen() {
         )}
       </ScrollView>
 
-      <JobDetailModal job={open} onClose={() => setOpen(null)} />
+      <JobDetailModal job={open} onClose={() => setOpen(null)} isRecruiter={isRecruiter} />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );
@@ -97,7 +114,7 @@ const s = StyleSheet.create({
   scroll: { padding: 16, paddingBottom: 32 },
   hero: { backgroundColor: C.teal600, borderRadius: 16, padding: 20, marginBottom: 20 },
   heroKicker: { fontSize: 11, fontFamily: F.mono, color: 'rgba(244,240,232,0.7)', textTransform: 'uppercase', letterSpacing: 1.4, marginBottom: 8 },
-  heroTitle: { fontSize: 32, fontFamily: F.serif, fontStyle: 'italic', color: C.paper, lineHeight: 36 },
+  heroTitle: { fontSize: 32, fontFamily: F.interSemiBold, color: C.paper, lineHeight: 36 },
   heroSub: { color: 'rgba(244,240,232,0.85)' },
   filterCard: { padding: 12, marginBottom: 14 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },

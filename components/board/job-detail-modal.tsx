@@ -9,9 +9,10 @@ import type { Job } from '@/types';
 interface Props {
   job: Job | null;
   onClose: () => void;
+  isRecruiter?: boolean;
 }
 
-export function JobDetailModal({ job, onClose }: Props) {
+export function JobDetailModal({ job, onClose, isRecruiter }: Props) {
   if (!job) return null;
   const initials = job.poster.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
@@ -31,10 +32,12 @@ export function JobDetailModal({ job, onClose }: Props) {
           <TouchableOpacity style={[btn.base, btn.ghost]} onPress={onClose}>
             <Text style={btn.ghostText}>Close</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[btn.base, btn.primary]} onPress={handleApply}>
-            <Text style={btn.primaryText}>Apply</Text>
-            <Icon name="send" size={15} color={C.paper} />
-          </TouchableOpacity>
+          {!isRecruiter && (
+            <TouchableOpacity style={[btn.base, btn.primary]} onPress={handleApply}>
+              <Text style={btn.primaryText}>Apply</Text>
+              <Icon name="send" size={15} color={C.paper} />
+            </TouchableOpacity>
+          )}
         </>
       }
     >
@@ -78,7 +81,7 @@ const s = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   posted: { fontSize: 12, fontFamily: F.mono, color: C.muted, alignSelf: 'center' },
   blurb: { fontSize: 14, color: C.ink2, lineHeight: 20, marginBottom: 16 },
-  h5: { fontSize: 20, fontFamily: F.serif, fontStyle: 'italic', color: C.ink, marginBottom: 8, marginTop: 16 },
+  h5: { fontSize: 20, fontFamily: F.interSemiBold, color: C.ink, marginBottom: 8, marginTop: 16 },
   li: { flexDirection: 'row', gap: 8, marginBottom: 6 },
   bullet: { color: C.muted, fontSize: 13 },
   liText: { fontSize: 13, color: C.ink2, flex: 1, lineHeight: 18 },
