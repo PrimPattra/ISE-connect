@@ -1,14 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { C, F } from '@/constants/theme';
 
-interface Props { label: string; value: string | number; dark?: boolean }
+interface Props { label: string; value: string | number; dark?: boolean; onPress?: () => void; }
 
-export function ProfileStat({ label, value, dark = false }: Props) {
+export function ProfileStat({ label, value, dark = false, onPress }: Props) {
   return (
-    <View style={[s.box, dark && s.boxDark]}>
+    <TouchableOpacity
+      style={[s.box, dark && s.boxDark]}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      disabled={!onPress}
+    >
       <Text style={[s.label, dark && s.labelDark]}>{label}</Text>
       <Text style={[s.value, dark && s.valueDark]}>{value}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
