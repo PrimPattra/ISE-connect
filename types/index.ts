@@ -124,6 +124,7 @@ export interface UserProfile {
   track?: string;
   headline?: string;
   skills?: string[];
+  avatarColor?: string;
   // recruiter fields
   company?: string;
   companyTag?: string;
