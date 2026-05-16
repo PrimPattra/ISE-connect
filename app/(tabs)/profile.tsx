@@ -19,7 +19,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
-  const { user, setUser, jobs, projects, setProjects, toast } = useAppContext();
+  const { user, updateUser, signOut, jobs, projects, setProjects, toast } = useAppContext();
   const [addOpen, setAddOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [viewProject, setViewProject] = useState<Project | null>(null);
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
   };
 
   const handleSaveProfile = ({ headline, avatarColor }: { headline: string; avatarColor: string }) => {
-    setUser({ ...user, profile: { ...user.profile, headline, avatarColor } });
+    updateUser({ ...user, profile: { ...user.profile, headline, avatarColor } });
     toast('Profile updated.');
   };
 
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
     const current = user.profile.skills ?? [];
     const toAdd = pendingSkills.filter(sk => !current.includes(sk));
     if (toAdd.length === 0) { setAddSkillOpen(false); return; }
-    setUser({ ...user, profile: { ...user.profile, skills: [...current, ...toAdd] } });
+    updateUser({ ...user, profile: { ...user.profile, skills: [...current, ...toAdd] } });
     setPendingSkills([]);
     setAddSkillOpen(false);
     toast(`${toAdd.length} skill${toAdd.length > 1 ? 's' : ''} added.`);
@@ -241,7 +241,7 @@ export default function ProfileScreen() {
             <TouchableOpacity style={s.ghostBtn} onPress={() => setSignOutOpen(false)}>
               <Text style={s.ghostBtnText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.primaryBtn} onPress={() => setUser(null)}>
+            <TouchableOpacity style={s.primaryBtn} onPress={() => signOut()}>
               <Icon name="logout" size={14} color={C.paper} />
               <Text style={s.primaryBtnText}>Sign out</Text>
             </TouchableOpacity>
