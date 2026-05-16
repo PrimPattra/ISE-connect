@@ -52,6 +52,7 @@ export default function RecruiterScreen() {
     Promise.all(myJobIds.map(id => api.applications.listForJob(id)))
       .then(results => setApplicants(results.flat()))
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myJobIdsStr]);
 
   const move = async (aid: string, status: ApplicantStatus) => {

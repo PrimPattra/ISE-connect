@@ -6,7 +6,7 @@ import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_7
 import { AppProvider, useAppContext } from '@/context/app-context';
 
 function RootLayoutContent() {
-  const { user } = useAppContext();
+  const { user, loading } = useAppContext();
   const segments = useSegments();
   const router = useRouter();
   const [ready, setReady] = useState(false);
@@ -16,14 +16,14 @@ function RootLayoutContent() {
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || loading) return;
     const inAuthGroup = segments[0] === '(auth)';
     if (!user && !inAuthGroup) {
       router.replace('/(auth)');
     } else if (user && inAuthGroup) {
       router.replace(user.role === 'recruiter' ? '/(tabs)/recruiter' : '/(tabs)/board');
     }
-  }, [ready, user, segments]);
+  }, [ready, loading, user, segments]);
 
   return (
     <>
