@@ -1,5 +1,6 @@
 import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
+import { SkillPicker } from '@/components/ui/skill-picker';
 import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
 import type { ProjectFormData } from '@/types';
@@ -84,11 +85,10 @@ export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: P
         </View>
         <View>
           <Text style={m.sectionLabel}>Skills & Tools</Text>
-          <TextField
-            placeholder="e.g. React Native, TypeScript"
-            value={form.skills}
-            onChangeText={v => upd('skills', v)}
-            hint="Comma-separated"
+          <SkillPicker
+            key={String(open)}
+            value={form.skills ? form.skills.split(',').map(s => s.trim()).filter(Boolean) : []}
+            onChange={skills => upd('skills', skills.join(', '))}
           />
         </View>
         <View>
