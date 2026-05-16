@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatTile } from '@/components/recruiter/stat-tile';
@@ -15,7 +15,7 @@ import { Toast } from '@/components/ui/toast';
 import { Tooltip } from '@/components/ui/tooltip';
 import { Icon } from '@/components/icon';
 import { useAppContext } from '@/context/app-context';
-import { SEED_APPLICANTS } from '@/data/seed';
+import * as api from '@/services/api';
 import { C, F } from '@/constants/theme';
 import type { PostDraft } from '@/components/recruiter/post-role-modal';
 import type { Applicant, ApplicantStatus, Job } from '@/types';
@@ -36,55 +36,82 @@ export default function RecruiterScreen() {
   const [previewJob, setPreviewJob] = useState<Job | null>(null);
   const [openA, setOpenA] = useState<Applicant | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
-  const [applicants, setApplicants] = useState<Applicant[]>(SEED_APPLICANTS);
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
 
-  const myJobIds = useMemo(() => {
-    if (!user) return [];
-    const own = jobs.filter(j => j.company === user.profile.company).map(j => j.id);
-    return own.length ? own : jobs.slice(0, 2).map(j => j.id);
-  }, [jobs, user?.profile.company]);
+  const myJobs = useMemo(() => {
+    if (!user?.profile.id) return [];
+    return jobs.filter(j => j.poster?.userId === user.profile.id || j.company === user.profile.company);
+  }, [jobs, user?.profile.id, user?.profile.company]);
 
-  const myJobs = jobs.filter(j => myJobIds.includes(j.id));
+  const myJobIds = myJobs.map(j => j.id);
   const myApplicants = applicants.filter(a => myJobIds.includes(a.jobId));
 
-  const move = (aid: string, status: ApplicantStatus) =>
+  // Fetch applicants for all recruiter's jobs
+  useEffect(() => {
+    if (myJobIds.length === 0) return;
+    Promise.all(myJobIds.map(id => api.applications.listForJob(id)))
+      .then(results => setApplicants(results.flat()))
+      .catch(() => {});
+  }, [myJobIds.join(',')]);
+
+  const move = async (aid: string, status: ApplicantStatus) => {
     setApplicants(xs => xs.map(a => a.id === aid ? { ...a, status } : a));
+    try {
+      await api.applications.updateStatus(aid, status);
+    } catch {
+      setApplicants(xs => xs.map(a => a.id === aid ? { ...a, status: a.status } : a));
+    }
+  };
 
-  const closeRole = (jid: string) => {
+  const closeRole = async (jid: string) => {
     setJobs(js => js.filter(j => j.id !== jid));
-    toast('Role closed.');
+    try {
+      await api.jobs.delete(jid);
+      toast('Role closed.');
+    } catch {
+      toast('Failed to close role.');
+    }
   };
 
-  const edit = (jid: string, d: PostDraft) => {
-    setJobs(js => js.map(j => j.id === jid
-      ? { ...j, title: d.title, type: d.type as any, location: d.location, comp: d.comp, period: d.period, skills: d.skills, blurb: d.blurb, duties: d.duties, applicationLink: d.applicationLink }
-      : j
-    ));
-    setEditingJob(null);
-    toast('Role updated.');
+  const edit = async (jid: string, d: PostDraft) => {
+    try {
+      const updated = await api.jobs.edit(jid, {
+        title: d.title, type: d.type, location: d.location, comp: d.comp,
+        period: d.period, skills: d.skills, blurb: d.blurb,
+        duties: d.duties, application_link: d.applicationLink,
+      });
+      setJobs(js => js.map(j => j.id === jid ? updated : j));
+      setEditingJob(null);
+      toast('Role updated.');
+    } catch {
+      toast('Failed to update role.');
+    }
   };
 
-  const post = (d: any) => {
-    const newJob = {
-      id: 'jr' + (jobs.length + 1),
-      title: d.title || 'Untitled role',
-      company: user!.profile.company,
-      companyTag: user!.profile.cohort || '',
-      type: d.type,
-      location: d.location,
-      comp: d.comp || 'Negotiable',
-      posted: 'just now',
-      skills: Array.isArray(d.skills) ? d.skills : d.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
-      poster: { name: user!.profile.name, tag: user!.profile.cohort || 'Employer', role: user!.profile.position },
-      blurb: d.blurb || 'Ask the recruiter for the full description.',
-      duties: d.duties || '',
-      period: d.period || '',
-      applicationLink: d.applicationLink || '',
-      saved: false,
-    };
-    setJobs(js => [newJob as any, ...js]);
-    setOpenPost(false);
-    toast(`Role posted: ${newJob.title}.`);
+  const post = async (d: any) => {
+    try {
+      const skills = Array.isArray(d.skills)
+        ? d.skills
+        : d.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+      const newJob = await api.jobs.create({
+        title: d.title || 'Untitled role',
+        company: user!.profile.company ?? '',
+        company_tag: user!.profile.companyTag ?? user!.profile.cohort ?? '',
+        type: d.type,
+        location: d.location,
+        comp: d.comp || 'Negotiable',
+        skills,
+        blurb: d.blurb || '',
+        duties: d.duties || '',
+        period: d.period || '',
+        application_link: d.applicationLink || '',
+      });
+      setJobs(js => [newJob, ...js]);
+      setOpenPost(false);
+      toast(`Role posted: ${newJob.title}.`);
+    } catch {
+      toast('Failed to post role.');
+    }
   };
 
   if (!user) return null;

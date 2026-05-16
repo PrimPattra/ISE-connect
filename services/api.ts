@@ -50,7 +50,7 @@ function mapUser(raw: any): User {
           company, companyTag, isAlumni, alumniCohort, position } = raw;
   return {
     role,
-    profile: { name, email, firstName, lastName, studentId,
+    profile: { id, name, email, firstName, lastName, studentId,
                cohort, track, headline, skills, avatarColor,
                company, companyTag, isAlumni, alumniCohort, position },
   };
@@ -101,6 +101,14 @@ export const jobs = {
   async toggleSave(id: string): Promise<boolean> {
     const data = await patch<{ saved: boolean }>(`/jobs/${id}/save`, {});
     return data.saved;
+  },
+
+  mine(): Promise<Job[]> {
+    return get<Job[]>('/jobs/mine');
+  },
+
+  edit(id: string, payload: object): Promise<Job> {
+    return patch<Job>(`/jobs/${id}`, payload);
   },
 
   delete(id: string): Promise<void> {
