@@ -16,7 +16,8 @@ import { Icon } from '@/components/icon';
 import { useAppContext } from '@/context/app-context';
 import { SEED_APPLICANTS } from '@/data/seed';
 import { C, F } from '@/constants/theme';
-import type { Applicant, ApplicantStatus } from '@/types';
+import type { PostDraft } from '@/components/recruiter/post-role-modal';
+import type { Applicant, ApplicantStatus, Job } from '@/types';
 
 type Tab = 'dashboard' | 'roles' | 'candidates';
 
@@ -30,6 +31,7 @@ export default function RecruiterScreen() {
   const { user, setUser, jobs, setJobs, toastMsg, toast } = useAppContext();
   const [tab, setTab] = useState<Tab>('dashboard');
   const [openPost, setOpenPost] = useState(false);
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [openA, setOpenA] = useState<Applicant | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>(SEED_APPLICANTS);
@@ -49,6 +51,15 @@ export default function RecruiterScreen() {
   const closeRole = (jid: string) => {
     setJobs(js => js.filter(j => j.id !== jid));
     toast('Role closed.');
+  };
+
+  const edit = (jid: string, d: PostDraft) => {
+    setJobs(js => js.map(j => j.id === jid
+      ? { ...j, title: d.title, type: d.type as any, location: d.location, comp: d.comp, period: d.period, skills: d.skills, blurb: d.blurb, applicationLink: d.applicationLink }
+      : j
+    ));
+    setEditingJob(null);
+    toast('Role updated.');
   };
 
   const post = (d: any) => {
@@ -150,6 +161,7 @@ export default function RecruiterScreen() {
                 onMove={move}
                 onOpen={setOpenA}
                 onClose={closeRole}
+                onEditOpen={setEditingJob}
               />
             ))
             : (
@@ -192,6 +204,23 @@ export default function RecruiterScreen() {
         onPost={post}
         recruiterCompany={user.profile.company ?? ''}
         recruiterCompanyTag={user.profile.companyTag ?? ''}
+      />
+      <PostRoleModal
+        open={editingJob !== null}
+        onClose={() => setEditingJob(null)}
+        onPost={d => editingJob && edit(editingJob.id, d)}
+        recruiterCompany={user.profile.company ?? ''}
+        recruiterCompanyTag={user.profile.companyTag ?? ''}
+        initialDraft={editingJob ? {
+          title: editingJob.title,
+          type: editingJob.type,
+          location: editingJob.location,
+          comp: editingJob.comp,
+          period: editingJob.period,
+          skills: [...editingJob.skills],
+          blurb: editingJob.blurb,
+          applicationLink: editingJob.applicationLink,
+        } : undefined}
       />
       <ApplicantDetailModal a={openA} onClose={() => setOpenA(null)} onMove={move} />
       <Toast msg={toastMsg} />

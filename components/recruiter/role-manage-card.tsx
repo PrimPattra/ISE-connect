@@ -16,9 +16,10 @@ interface Props {
   onMove: (id: string, status: ApplicantStatus) => void;
   onOpen: (a: Applicant) => void;
   onClose: (jid: string) => void;
+  onEditOpen: (job: Job) => void;
 }
 
-export function RoleManageCard({ job, applicants, onMove, onOpen, onClose }: Props) {
+export function RoleManageCard({ job, applicants, onMove, onOpen, onClose, onEditOpen }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const grouped = STAGES.map(s => ({ stage: s, count: applicants.filter(a => a.status === s).length }));
   return (
@@ -33,7 +34,7 @@ export function RoleManageCard({ job, applicants, onMove, onOpen, onClose }: Pro
           <Text style={s.meta}>{applicants.length} applicants · posted {job.posted}</Text>
         </View>
         <View style={s.actions}>
-          <TouchableOpacity style={s.smallBtn}>
+          <TouchableOpacity style={s.smallBtn} onPress={() => onEditOpen(job)}>
             <Icon name="edit" size={13} color={C.ink2} />
             <Text style={s.smallBtnText}>Edit</Text>
           </TouchableOpacity>

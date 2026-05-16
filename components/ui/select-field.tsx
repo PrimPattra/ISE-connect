@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@/components/icon';
 import { C, F, Shadow } from '@/constants/theme';
+import { useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Option {
   value: string;

@@ -11,7 +11,7 @@ interface Props { applicants: Applicant[] }
 export function CandidateSearch({ applicants }: Props) {
   const [q, setQ] = useState('');
   const [cohort, setCohort] = useState('All');
-  const cohorts = ['All', ...Array.from(new Set(applicants.map(a => a.tag)))];
+  const cohorts = ['All', ...Array.from(new Set(applicants.map(a => a.tag))).sort()];
   const filtered = applicants.filter(a => {
     if (cohort !== 'All' && a.tag !== cohort) return false;
     if (q && !`${a.name} ${a.headline} ${a.skills.join(' ')}`.toLowerCase().includes(q.toLowerCase())) return false;
