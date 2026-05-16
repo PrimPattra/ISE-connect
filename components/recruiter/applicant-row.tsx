@@ -18,7 +18,7 @@ export function ApplicantRow({ a, onMove, onOpen }: Props) {
   const initials = a.name.split(' ').map(w => w[0]).slice(0, 2).join('');
   return (
     <View style={s.row}>
-      <View style={s.avatar}><Text style={s.avatarText}>{initials}</Text></View>
+      <View style={[s.avatar, a.avatarColor ? { backgroundColor: a.avatarColor } : null]}><Text style={s.avatarText}>{initials}</Text></View>
       <View style={s.info}>
         <View style={s.nameRow}>
           <Text style={s.name} numberOfLines={1}>{a.name}</Text>

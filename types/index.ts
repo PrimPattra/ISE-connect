@@ -139,6 +139,11 @@ export interface User {
   profile: UserProfile;
 }
 
+export interface ApplicantProject {
+  title: string;
+  skills: string[];
+}
+
 export interface Applicant {
   id: string;
   jobId: string;
@@ -149,4 +154,6 @@ export interface Applicant {
   skills: string[];
   status: ApplicantStatus;
   applied: string;
+  avatarColor?: string;
+  projects?: ApplicantProject[];
 }
