@@ -9,13 +9,13 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 
 export interface PostDraft {
   title: string; type: string; location: string;
-  comp: string; period: string; skills: string[]; blurb: string;
+  comp: string; period: string; skills: string[]; blurb: string; duties: string;
   applicationLink: string; requireCoverLetter: boolean; requirePortfolio: boolean;
 }
 
 const EMPTY_DRAFT: PostDraft = {
   title: '', type: 'Internship', location: 'On-site · Bangkok',
-  comp: '', period: 'Off-cycle · Jun–Aug', skills: [], blurb: '',
+  comp: '', period: 'Off-cycle · Jun–Aug', skills: [], blurb: '', duties: '',
   applicationLink: '', requireCoverLetter: false, requirePortfolio: false,
 };
 
@@ -97,22 +97,6 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
           <SelectField label="Location" value={d.location} onChange={v => upd('location', v)} options={['On-site · Bangkok', 'Hybrid · Bangkok', 'Remote'].map(v => ({ value: v, label: v }))} />
 
           <View>
-            <Text style={s.fieldLabel}>Compensation</Text>
-            <View style={s.compBox}>
-              <TextField label="Amount" placeholder="28000" value={compAmount} onChangeText={setCompAmount} keyboardType="numeric" />
-              <SelectField label="Period" value={compPeriod} onChange={setCompPeriod} options={[{ value: 'month', label: 'per month' }, { value: 'hour', label: 'per hour' }, { value: 'year', label: 'per year' }]} />
-              <SelectField label="Currency" value={compCurrency} onChange={setCompCurrency} options={[{ value: 'THB', label: 'THB ฿' }, { value: 'USD', label: 'USD $' }, { value: 'EUR', label: 'EUR €' }]} />
-            </View>
-          </View>
-
-          <TextField label="Period" placeholder="e.g. Off-cycle · Jun–Aug" value={d.period} onChangeText={v => upd('period', v)} />
-
-          <View>
-            <Text style={s.fieldLabel}>Skills required</Text>
-            <SkillPicker key={String(open)} value={d.skills} onChange={skills => upd('skills', skills)} />
-          </View>
-
-          <View>
             <Text style={s.fieldLabel}>Job description</Text>
             <TextInput
               style={s.textarea}
@@ -124,6 +108,36 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
               onChangeText={v => upd('blurb', v)}
               textAlignVertical="top"
             />
+          </View>
+
+          <View>
+            <Text style={s.fieldLabel}>What you'll do</Text>
+            <TextInput
+              style={s.textarea}
+              multiline
+              numberOfLines={4}
+              placeholder="e.g. Own a feature end-to-end, ship to production, present at team demos…"
+              placeholderTextColor={C.muted}
+              value={d.duties}
+              onChangeText={v => upd('duties', v)}
+              textAlignVertical="top"
+            />
+          </View>
+
+          <View>
+            <Text style={s.fieldLabel}>Skills required</Text>
+            <SkillPicker key={String(open)} value={d.skills} onChange={skills => upd('skills', skills)} />
+          </View>
+
+          <TextField label="Period" placeholder="e.g. Off-cycle · Jun–Aug" value={d.period} onChangeText={v => upd('period', v)} />
+
+          <View>
+            <Text style={s.fieldLabel}>Compensation</Text>
+            <View style={s.compBox}>
+              <TextField label="Amount" placeholder="28000" value={compAmount} onChangeText={setCompAmount} keyboardType="numeric" />
+              <SelectField label="Period" value={compPeriod} onChange={setCompPeriod} options={[{ value: 'month', label: 'per month' }, { value: 'hour', label: 'per hour' }, { value: 'year', label: 'per year' }]} />
+              <SelectField label="Currency" value={compCurrency} onChange={setCompCurrency} options={[{ value: 'THB', label: 'THB ฿' }, { value: 'USD', label: 'USD $' }, { value: 'EUR', label: 'EUR €' }]} />
+            </View>
           </View>
 
           <View style={s.postedAs}>

@@ -14,6 +14,7 @@ export interface Job {
   skills: string[];
   poster: { name: string; tag: string; role: string };
   blurb: string;
+  duties?: string;
   period: string;
   applicationLink: string;
   saved: boolean;
