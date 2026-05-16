@@ -5,6 +5,7 @@ import { StatTile } from '@/components/recruiter/stat-tile';
 import { ApplicantRow } from '@/components/recruiter/applicant-row';
 import { ApplicantDetailModal } from '@/components/recruiter/applicant-detail-modal';
 import { RoleManageCard } from '@/components/recruiter/role-manage-card';
+import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { CandidateSearch } from '@/components/recruiter/candidate-search';
 import { PostRoleModal } from '@/components/recruiter/post-role-modal';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -32,6 +33,7 @@ export default function RecruiterScreen() {
   const [tab, setTab] = useState<Tab>('dashboard');
   const [openPost, setOpenPost] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
+  const [previewJob, setPreviewJob] = useState<Job | null>(null);
   const [openA, setOpenA] = useState<Applicant | null>(null);
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>(SEED_APPLICANTS);
@@ -163,6 +165,7 @@ export default function RecruiterScreen() {
                 onOpen={setOpenA}
                 onClose={closeRole}
                 onEditOpen={setEditingJob}
+                onPreview={setPreviewJob}
               />
             ))
             : (
@@ -224,6 +227,7 @@ export default function RecruiterScreen() {
         } : undefined}
       />
       <ApplicantDetailModal a={openA} onClose={() => setOpenA(null)} onMove={move} />
+      <JobDetailModal job={previewJob} onClose={() => setPreviewJob(null)} isRecruiter />
       <Toast msg={toastMsg} />
     </SafeAreaView>
   );

@@ -19,6 +19,8 @@ const EMPTY_DRAFT: PostDraft = {
   applicationLink: '', requireCoverLetter: false, requirePortfolio: false,
 };
 
+type Errors = Partial<Record<'title' | 'blurb' | 'locCity', string>>;
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -31,6 +33,7 @@ interface Props {
 export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruiterCompanyTag, initialDraft }: Props) {
   const [tab, setTab] = useState<'details' | 'form'>('details');
   const [d, setD] = useState<PostDraft>({ ...EMPTY_DRAFT, ...initialDraft });
+  const [errors, setErrors] = useState<Errors>({});
   const [compAmount, setCompAmount] = useState('');
   const [compPeriod, setCompPeriod] = useState('month');
   const [compCurrency, setCompCurrency] = useState('THB');
@@ -46,6 +49,7 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     if (open) {
       setTab('details');
       setD({ ...EMPTY_DRAFT, ...initialDraft });
+      setErrors({});
       setCompAmount('');
       setCompPeriod('month');
       setCompCurrency('THB');
@@ -58,6 +62,7 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
   const reset = () => {
     setTab('details');
     setD(EMPTY_DRAFT);
+    setErrors({});
     setCompAmount('');
     setCompPeriod('month');
     setCompCurrency('THB');
@@ -65,7 +70,18 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     setLocCity('Bangkok');
   };
 
-  const upd = <K extends keyof PostDraft>(k: K, v: PostDraft[K]) => setD(x => ({ ...x, [k]: v }));
+  const upd = <K extends keyof PostDraft>(k: K, v: PostDraft[K]) => {
+    setD(x => ({ ...x, [k]: v }));
+    setErrors(e => ({ ...e, [k]: undefined }));
+  };
+
+  const validate = (): Errors => {
+    const e: Errors = {};
+    if (!d.title.trim()) e.title = 'Role title is required.';
+    if (!d.blurb.trim()) e.blurb = 'Job description is required.';
+    if (locType !== 'Remote' && !locCity.trim()) e.locCity = 'City is required.';
+    return e;
+  };
 
   const buildFinalDraft = (): PostDraft => {
     const SYMBOL: Record<string, string> = { THB: '฿', USD: '$', EUR: '€' };
@@ -75,6 +91,17 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
       : 'Negotiable';
     const location = locType === 'Remote' ? 'Remote' : `${locType} · ${locCity.trim() || 'Bangkok'}`;
     return { ...d, comp, location };
+  };
+
+  const handlePublish = () => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      setTab('details');
+      return;
+    }
+    onPost(buildFinalDraft());
+    reset();
   };
 
   return (
@@ -87,7 +114,7 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
           <TouchableOpacity style={[btn.base, btn.ghost]} onPress={() => { reset(); onClose(); }}>
             <Text style={btn.ghostText}>Save draft</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[btn.base, btn.primary]} onPress={() => { onPost(buildFinalDraft()); reset(); }}>
+          <TouchableOpacity style={[btn.base, btn.primary]} onPress={handlePublish}>
             <Text style={btn.primaryText}>Publish to ISE</Text>
             <Icon name="send" size={15} color={C.paper} />
           </TouchableOpacity>
@@ -105,23 +132,31 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
 
       {tab === 'details' && (
         <View style={s.fields}>
-          <TextField label="Role title" placeholder="e.g. Software Engineering Intern" value={d.title} onChangeText={v => upd('title', v)} />
+          <TextField
+            label="Role title *"
+            placeholder="e.g. Software Engineering Intern"
+            value={d.title}
+            onChangeText={v => upd('title', v)}
+            error={errors.title}
+          />
           <SelectField label="Type" value={d.type} onChange={v => upd('type', v)} options={['Internship', 'Full-time', 'Freelance', 'Research'].map(v => ({ value: v, label: v }))} />
+
           <View>
-            <Text style={s.fieldLabel}>Location</Text>
+            <Text style={s.fieldLabel}>Location *</Text>
             <View style={s.locationRow}>
               <View style={{ flex: 1 }}>
                 <TextField
                   placeholder="e.g. Bangkok"
                   value={locCity}
-                  onChangeText={setLocCity}
+                  onChangeText={v => { setLocCity(v); setErrors(e => ({ ...e, locCity: undefined })); }}
                   editable={locType !== 'Remote'}
+                  error={errors.locCity}
                 />
               </View>
               <View style={s.locationSelect}>
                 <SelectField
                   value={locType}
-                  onChange={setLocType}
+                  onChange={v => { setLocType(v); setErrors(e => ({ ...e, locCity: undefined })); }}
                   options={['On-site', 'Hybrid', 'Remote'].map(v => ({ value: v, label: v }))}
                 />
               </View>
@@ -129,9 +164,9 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
           </View>
 
           <View>
-            <Text style={s.fieldLabel}>Job description</Text>
+            <Text style={s.fieldLabel}>Job description *</Text>
             <TextInput
-              style={s.textarea}
+              style={[s.textarea, !!errors.blurb && s.textareaError]}
               multiline
               numberOfLines={5}
               placeholder="Describe the role, responsibilities, and what makes your team unique…"
@@ -140,6 +175,7 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
               onChangeText={v => upd('blurb', v)}
               textAlignVertical="top"
             />
+            {!!errors.blurb && <Text style={s.errorText}>{errors.blurb}</Text>}
           </View>
 
           <View>
@@ -229,6 +265,8 @@ const s = StyleSheet.create({
   locationSelect: { width: 110 },
   compBox: { borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 14, backgroundColor: C.paper2, gap: 10 },
   textarea: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink, minHeight: 110 },
+  textareaError: { borderColor: C.ember },
+  errorText: { fontSize: 11, color: C.ember, marginTop: 4 },
   postedAs: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 12 },
   postedAsText: { fontSize: 12, color: C.muted, flex: 1 },
   company: { color: C.ink },
