@@ -1,3 +1,4 @@
+import * as api from '@/services/api';
 import { JobCard } from '@/components/board/job-card';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
@@ -31,7 +32,15 @@ export default function BoardScreen() {
     return true;
   }), [jobs, q, type, loc]);
 
-  const toggleSave = (id: string) => setJobs(js => js.map(j => j.id === id ? { ...j, saved: !j.saved } : j));
+  const toggleSave = async (id: string) => {
+    setJobs(js => js.map(j => j.id === id ? { ...j, saved: !j.saved } : j));
+    try {
+      await api.jobs.toggleSave(id);
+    } catch {
+      // revert on failure
+      setJobs(js => js.map(j => j.id === id ? { ...j, saved: !j.saved } : j));
+    }
+  };
 
   return (
     <SafeAreaView style={s.safe}>
