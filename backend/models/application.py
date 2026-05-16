@@ -40,9 +40,10 @@ class ApplicationDoc(BaseModel):
         return cls(**doc)
 
     def to_response(self) -> dict:
-        d = self.model_dump()
+        from utils import camel_dict
+        d = self.model_dump(exclude={'user_id', 'applied_at'})
         d['applied'] = self.applied_at.isoformat()
-        return d
+        return camel_dict(d)
 
 
 class StatusUpdate(BaseModel):

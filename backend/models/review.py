@@ -40,5 +40,5 @@ class ReviewDoc(BaseModel):
         return cls(**doc)
 
     def to_response(self) -> dict:
-        """Expose review without user_id."""
-        return self.model_dump(exclude={'user_id'})
+        from utils import camel_dict
+        return camel_dict(self.model_dump(exclude={'user_id', 'created_at'}))

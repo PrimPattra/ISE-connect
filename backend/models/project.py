@@ -58,7 +58,7 @@ class ProjectDoc(BaseModel):
         return cls(**doc)
 
     def to_response(self, requesting_user_id: Optional[str] = None) -> dict:
-        d = self.model_dump()
+        from utils import camel_dict
+        d = self.model_dump(exclude={'liked_by', 'created_at'})
         d['liked'] = requesting_user_id in self.liked_by if requesting_user_id else False
-        d.pop('liked_by')
-        return d
+        return camel_dict(d)

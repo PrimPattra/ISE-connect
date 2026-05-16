@@ -1,13 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { SEED_JOBS, SEED_PROJECTS, SEED_REGISTERED_USERS, SEED_RESOURCES, SEED_REVIEWS } from '@/data/seed';
+import * as api from '@/services/api';
 import type { Job, Project, Resource, Review, User } from '@/types';
 
 const USER_KEY = 'ise_user';
 
 interface AppContextValue {
   user: User | null;
-  setUser: (u: User | null) => void;
+  token: string | null;
+  setAuthResult: (user: User, token: string) => void;
+  signOut: () => void;
   jobs: Job[];
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
   reviews: Review[];
@@ -18,32 +20,79 @@ interface AppContextValue {
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
   toastMsg: string;
   toast: (msg: string) => void;
-  registeredEmails: string[];
-  registerUser: (email: string) => void;
-  isEmailRegistered: (email: string) => boolean;
+  loading: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUserState] = useState<User | null>(null);
-  const [jobs, setJobs] = useState<Job[]>(SEED_JOBS);
-  const [reviews, setReviews] = useState<Review[]>(SEED_REVIEWS);
-  const [resources, setResources] = useState<Resource[]>(SEED_RESOURCES);
-  const [projects, setProjects] = useState<Project[]>(SEED_PROJECTS);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [toastMsg, setToastMsg] = useState('');
-  const [registeredEmails, setRegisteredEmails] = useState<string[]>(SEED_REGISTERED_USERS);
+  const [loading, setLoading] = useState(true);
 
+  // Restore session on app launch
   useEffect(() => {
-    AsyncStorage.getItem(USER_KEY).then(raw => {
-      if (raw) setUserState(JSON.parse(raw));
-    });
+    async function restoreSession() {
+      try {
+        const storedToken = await api.getToken();
+        if (storedToken) {
+          const me = await api.auth.me();
+          setUser(me);
+          setToken(storedToken);
+        }
+      } catch {
+        // Token expired or invalid — clear it
+        await api.clearToken();
+      } finally {
+        setLoading(false);
+      }
+    }
+    restoreSession();
   }, []);
 
-  function setUser(u: User | null) {
-    setUserState(u);
-    if (u) AsyncStorage.setItem(USER_KEY, JSON.stringify(u));
-    else AsyncStorage.removeItem(USER_KEY);
+  // Fetch all data once user is set
+  useEffect(() => {
+    if (!user) return;
+    async function fetchAll() {
+      try {
+        const [j, rv, rs, p] = await Promise.all([
+          api.jobs.list(),
+          api.reviews.list(),
+          api.resources.list(),
+          api.projects.list(),
+        ]);
+        setJobs(j);
+        setReviews(rv);
+        setResources(rs);
+        setProjects(p);
+      } catch {
+        // Data fetch failed silently — lists stay empty
+      }
+    }
+    fetchAll();
+  }, [user]);
+
+  function setAuthResult(u: User, t: string) {
+    setUser(u);
+    setToken(t);
+    api.saveToken(t);
+    AsyncStorage.setItem(USER_KEY, JSON.stringify(u));
+  }
+
+  function signOut() {
+    setUser(null);
+    setToken(null);
+    api.clearToken();
+    AsyncStorage.removeItem(USER_KEY);
+    setJobs([]);
+    setReviews([]);
+    setResources([]);
+    setProjects([]);
   }
 
   function toast(msg: string) {
@@ -51,16 +100,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setToastMsg(''), 2400);
   }
 
-  function registerUser(email: string) {
-    setRegisteredEmails(es => es.includes(email) ? es : [...es, email]);
-  }
-
-  function isEmailRegistered(email: string) {
-    return registeredEmails.includes(email.toLowerCase().trim());
-  }
-
   return (
-    <AppContext.Provider value={{ user, setUser, jobs, setJobs, reviews, setReviews, resources, setResources, projects, setProjects, toastMsg, toast, registeredEmails, registerUser, isEmailRegistered }}>
+    <AppContext.Provider value={{
+      user, token, setAuthResult, signOut,
+      jobs, setJobs,
+      reviews, setReviews,
+      resources, setResources,
+      projects, setProjects,
+      toastMsg, toast,
+      loading,
+    }}>
       {children}
     </AppContext.Provider>
   );
