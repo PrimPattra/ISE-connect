@@ -1,3 +1,4 @@
+import * as api from '@/services/api';
 import { RoleCard } from '@/components/auth/role-card';
 import { Stepper } from '@/components/auth/stepper';
 import { Icon } from '@/components/icon';
@@ -40,7 +41,7 @@ function validateEmailDomain(email: string): string | undefined {
 }
 
 export default function AuthScreen() {
-  const { setUser, toast, registerUser, isEmailRegistered } = useAppContext();
+  const { setAuthResult, toast } = useAppContext();
   const [mode, setMode] = useState<Mode>('signup');
   const [step, setStep] = useState(0);
   const [role, setRole] = useState<Role>('hunter');
@@ -100,28 +101,30 @@ export default function AuthScreen() {
     setStep(next);
   };
 
-  const finish = () => {
+  const finish = async () => {
     const errs = validateProfile();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    const fullName = `${form.firstName} ${form.lastName}`;
-    const cohort = `${form.major}#${form.batchNo}`;
-    const profile = role === 'hunter'
-      ? {
-          name: fullName, firstName: form.firstName, lastName: form.lastName,
-          email: form.email, studentId: form.studentId,
-          cohort,
-          skills: form.skills.split(',').map(s => s.trim()).filter(Boolean),
-        }
-      : {
-          name: fullName, firstName: form.firstName, lastName: form.lastName,
-          email: form.email, studentId: form.studentId,
-          cohort,
-          company: form.company,
-          position: form.position,
-        };
-    registerUser(form.email);
-    setUser({ role, profile });
-    toast('Welcome to ISE Connect.');
+    try {
+      const cohort = `${form.major}#${form.batchNo}`;
+      const { token, user } = await api.auth.register({
+        email: form.email,
+        password: form.password,
+        role,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        student_id: form.studentId,
+        cohort,
+        ...(role === 'hunter'
+          ? { skills: form.skills.split(',').map(s => s.trim()).filter(Boolean) }
+          : { company: form.company, position: form.position }
+        ),
+      });
+      setAuthResult(user, token);
+      toast('Welcome to ISE Connect.');
+    } catch (e: any) {
+      setErrors({ email: e.message });
+      setShowConfirm(false);
+    }
   };
 
   const tryFinish = () => {
@@ -130,16 +133,18 @@ export default function AuthScreen() {
     setShowConfirm(true);
   };
 
-  const signIn = () => {
+  const signIn = async () => {
     const e: FormErrors = {};
     if (!form.email.trim()) e.email = 'Email is required.';
     if (!form.password.trim()) e.password = 'Password is required.';
-    if (!e.email && !isEmailRegistered(form.email)) {
-      e.email = 'No account found with this email. Please sign up first.';
-    }
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-    setUser({ role: 'hunter', profile: { name: 'User', email: form.email } });
-    toast('Welcome back.');
+    try {
+      const { token, user } = await api.auth.login(form.email, form.password);
+      setAuthResult(user, token);
+      toast('Welcome back.');
+    } catch (err: any) {
+      setErrors({ email: err.message });
+    }
   };
 
   if (mode === 'signin') {

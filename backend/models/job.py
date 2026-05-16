@@ -54,8 +54,10 @@ class JobDoc(BaseModel):
         return cls(**doc)
 
     def to_response(self, requesting_user_id: Optional[str] = None) -> dict:
-        d = self.model_dump()
+        from utils import camel_dict
+        d = self.model_dump(exclude={'created_at', 'saved_by'})
         d['saved'] = requesting_user_id in self.saved_by if requesting_user_id else False
-        d.pop('saved_by')
         d['posted'] = self.created_at.isoformat()
-        return d
+        # strip internal user_id from poster
+        d['poster'] = {k: v for k, v in d['poster'].items() if k != 'user_id'}
+        return camel_dict(d)

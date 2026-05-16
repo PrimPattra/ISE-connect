@@ -28,4 +28,7 @@ class QADoc(BaseModel):
         return cls(**doc)
 
     def to_response(self) -> dict:
-        return self.model_dump(exclude={'user_id'})
+        from utils import camel_dict
+        d = self.model_dump(exclude={'user_id', 'created_at'})
+        d['q'] = d.pop('question')   # frontend QA type uses 'q' not 'question'
+        return camel_dict(d)

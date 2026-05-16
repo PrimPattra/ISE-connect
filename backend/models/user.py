@@ -68,7 +68,8 @@ class UserDoc(BaseModel):
         return cls(**doc)
 
     def to_response(self) -> dict:
-        """Safe dict for API responses — password_hash excluded."""
-        d = self.model_dump(exclude={'password_hash'})
+        """Safe dict for API responses — password_hash and created_at excluded."""
+        from utils import camel_dict
+        d = self.model_dump(exclude={'password_hash', 'created_at'})
         d['name'] = self.name
-        return d
+        return camel_dict(d)
