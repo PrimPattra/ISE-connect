@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Modal } from '@/components/ui/modal';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { TagPill } from '@/components/ui/tag-pill';
-import { TextField } from '@/components/ui/text-field';
+import { SkillPicker } from '@/components/ui/skill-picker';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [addSkillOpen, setAddSkillOpen] = useState(false);
-  const [newSkill, setNewSkill] = useState('');
+  const [pendingSkills, setPendingSkills] = useState<string[]>([]);
   const scrollRef = useRef<ScrollView>(null);
   const savedY = useRef(0);
   const portfolioY = useRef(0);
@@ -74,15 +74,13 @@ export default function ProfileScreen() {
   };
 
   const handleAddSkill = () => {
-    const skill = newSkill.trim();
-    if (!skill) return;
     const current = user.profile.skills ?? [];
-    if (!current.includes(skill)) {
-      setUser({ ...user, profile: { ...user.profile, skills: [...current, skill] } });
-    }
-    setNewSkill('');
+    const toAdd = pendingSkills.filter(sk => !current.includes(sk));
+    if (toAdd.length === 0) { setAddSkillOpen(false); return; }
+    setUser({ ...user, profile: { ...user.profile, skills: [...current, ...toAdd] } });
+    setPendingSkills([]);
     setAddSkillOpen(false);
-    toast('Skill added.');
+    toast(`${toAdd.length} skill${toAdd.length > 1 ? 's' : ''} added.`);
   };
 
   const handleAddToShowcase = () => {
@@ -217,11 +215,11 @@ export default function ProfileScreen() {
 
       <Modal
         open={addSkillOpen}
-        onClose={() => { setAddSkillOpen(false); setNewSkill(''); }}
-        title="Add skill"
+        onClose={() => { setAddSkillOpen(false); setPendingSkills([]); }}
+        title="Add skills"
         footer={
           <>
-            <TouchableOpacity style={s.ghostBtn} onPress={() => { setAddSkillOpen(false); setNewSkill(''); }}>
+            <TouchableOpacity style={s.ghostBtn} onPress={() => { setAddSkillOpen(false); setPendingSkills([]); }}>
               <Text style={s.ghostBtnText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={s.primaryBtn} onPress={handleAddSkill}>
@@ -231,12 +229,7 @@ export default function ProfileScreen() {
           </>
         }
       >
-        <TextField
-          placeholder="e.g. React Native"
-          value={newSkill}
-          onChangeText={setNewSkill}
-          autoFocus
-        />
+        <SkillPicker key={String(addSkillOpen)} value={pendingSkills} onChange={setPendingSkills} />
       </Modal>
 
       <Modal
