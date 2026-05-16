@@ -1,7 +1,7 @@
+import { Icon } from '@/components/icon';
+import { C } from '@/constants/theme';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, type TextInputProps, TouchableOpacity, View } from 'react-native';
-import { Icon } from '@/components/icon';
-import { C, F } from '@/constants/theme';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -45,7 +45,7 @@ const s = StyleSheet.create({
   inputWrap: { position: 'relative' },
   iconWrap: { position: 'absolute', left: 12, top: 0, bottom: 0, justifyContent: 'center', zIndex: 1 },
   eyeWrap: { position: 'absolute', right: 12, top: 0, bottom: 0, justifyContent: 'center', zIndex: 1 },
-  input: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink, fontFamily: F.sans },
+  input: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink },
   inputWithIcon: { paddingLeft: 38 },
   inputWithEye: { paddingRight: 38 },
   inputError: { borderColor: C.ember },

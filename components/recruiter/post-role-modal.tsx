@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Modal } from '@/components/ui/modal';
-import { TextField } from '@/components/ui/text-field';
-import { SelectField } from '@/components/ui/select-field';
 import { Icon } from '@/components/icon';
+import { Modal } from '@/components/ui/modal';
+import { SelectField } from '@/components/ui/select-field';
+import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const PREDEFINED_SKILLS = [
   'Python', 'JavaScript', 'TypeScript', 'React', 'React Native', 'Next.js',
@@ -12,7 +12,7 @@ const PREDEFINED_SKILLS = [
   'ROS', 'Linux', 'Figma', 'AWS', 'Docker', 'Go', 'Rust',
 ];
 
-interface PostDraft {
+export interface PostDraft {
   title: string; type: string; location: string;
   comp: string; period: string; skills: string[]; blurb: string;
   applicationLink: string; requireCoverLetter: boolean; requirePortfolio: boolean;
@@ -30,13 +30,23 @@ interface Props {
   onPost: (d: PostDraft) => void;
   recruiterCompany: string;
   recruiterCompanyTag: string;
+  initialDraft?: Partial<PostDraft>;
 }
 
-export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruiterCompanyTag }: Props) {
+export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruiterCompanyTag, initialDraft }: Props) {
   const [tab, setTab] = useState<'details' | 'form'>('details');
-  const [d, setD] = useState<PostDraft>(EMPTY_DRAFT);
+  const [d, setD] = useState<PostDraft>({ ...EMPTY_DRAFT, ...initialDraft });
   const [customSkill, setCustomSkill] = useState('');
   const [showCustom, setShowCustom] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setTab('details');
+      setD({ ...EMPTY_DRAFT, ...initialDraft });
+      setCustomSkill('');
+      setShowCustom(false);
+    }
+  }, [open]);
 
   const reset = () => {
     setTab('details');
