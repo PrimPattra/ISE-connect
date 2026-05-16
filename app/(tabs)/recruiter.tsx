@@ -29,7 +29,7 @@ const TABS: { id: Tab; label: string; icon: string }[] = [
 ];
 
 export default function RecruiterScreen() {
-  const { user, setUser, jobs, setJobs, toastMsg, toast } = useAppContext();
+  const { user, signOut, jobs, setJobs, toastMsg, toast } = useAppContext();
   const [tab, setTab] = useState<Tab>('dashboard');
   const [openPost, setOpenPost] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
@@ -192,7 +192,7 @@ export default function RecruiterScreen() {
             <TouchableOpacity style={s.ghostBtn} onPress={() => setSignOutOpen(false)}>
               <Text style={s.ghostBtnText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.signOutConfirmBtn} onPress={() => setUser(null)}>
+            <TouchableOpacity style={s.signOutConfirmBtn} onPress={() => signOut()}>
               <Icon name="logout" size={14} color={C.paper} />
               <Text style={s.signOutConfirmText}>Sign out</Text>
             </TouchableOpacity>

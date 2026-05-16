@@ -9,6 +9,7 @@ interface AppContextValue {
   user: User | null;
   token: string | null;
   setAuthResult: (user: User, token: string) => void;
+  updateUser: (user: User) => void;
   signOut: () => void;
   jobs: Job[];
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
@@ -77,6 +78,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     fetchAll();
   }, [user]);
 
+  function updateUser(u: User) {
+    setUser(u);
+    AsyncStorage.setItem(USER_KEY, JSON.stringify(u));
+  }
+
   function setAuthResult(u: User, t: string) {
     setUser(u);
     setToken(t);
@@ -102,7 +108,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      user, token, setAuthResult, signOut,
+      user, token, setAuthResult, updateUser, signOut,
       jobs, setJobs,
       reviews, setReviews,
       resources, setResources,
