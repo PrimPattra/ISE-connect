@@ -39,9 +39,9 @@ export default function RecruiterScreen() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
 
   const myJobs = useMemo(() => {
-    if (!user?.profile.id) return [];
-    return jobs.filter(j => j.poster?.userId === user.profile.id || j.company === user.profile.company);
-  }, [jobs, user?.profile.id, user?.profile.company]);
+    if (!user) return [];
+    return jobs.filter(j => j.company === user.profile.company);
+  }, [jobs, user?.profile.company]);
 
   const myJobIds = myJobs.map(j => j.id);
   const myApplicants = applicants.filter(a => myJobIds.includes(a.jobId));
