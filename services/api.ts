@@ -151,6 +151,10 @@ export const projects = {
     return post<Project>('/projects/', payload);
   },
 
+  edit(id: string, payload: object): Promise<Project> {
+    return patch<Project>(`/projects/${id}`, payload);
+  },
+
   async toggleLike(id: string): Promise<{ liked: boolean; likes: number }> {
     return patch(`/projects/${id}/like`, {});
   },

@@ -49,6 +49,25 @@ def create_project():
     return jsonify(doc.to_response(g.user_id)), 201
 
 
+@projects_bp.patch('/<project_id>')
+@hunter_only
+def edit_project(project_id):
+    raw = projects_col.find_one({'_id': ObjectId(project_id)})
+    if not raw:
+        return jsonify({'error': 'Project not found'}), 404
+    if raw['by']['user_id'] != g.user_id:
+        return jsonify({'error': 'You can only edit your own projects'}), 403
+
+    body = request.get_json(force=True) or {}
+    allowed = {'title', 'description', 'skills', 'project_link', 'contact_info', 'collaborators', 'media'}
+    update = {k: v for k, v in body.items() if k in allowed}
+    if update:
+        projects_col.update_one({'_id': ObjectId(project_id)}, {'$set': update})
+
+    updated = projects_col.find_one({'_id': ObjectId(project_id)})
+    return jsonify(ProjectDoc.from_mongo(updated).to_response(g.user_id)), 200
+
+
 @projects_bp.patch('/<project_id>/like')
 @require_auth
 def toggle_like(project_id):

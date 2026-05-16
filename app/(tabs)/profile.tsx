@@ -1,3 +1,4 @@
+import * as api from '@/services/api';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
 import { AddProjectModal } from '@/components/profile/add-project-modal';
@@ -37,35 +38,41 @@ export default function ProfileScreen() {
   const saved = jobs.filter(j => j.saved);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
-  const handleAddProject = (data: ProjectFormData) => {
-    setProjects(ps => [{
-      id: 'pp' + (ps.length + 1),
-      title: data.title,
-      by: { name: user.profile.name, tag: user.profile.cohort || 'ISE' },
-      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
-      skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
-      description: data.description || 'No description provided.',
-      projectLink: data.projectLink,
-      contactInfo: data.contactInfo || user.profile.email || '',
-      media: [],
-      likes: 0, views: 0,
-    }, ...ps]);
-    toast('Project added.');
+  const handleAddProject = async (data: ProjectFormData) => {
+    try {
+      const newProject = await api.projects.create({
+        title: data.title,
+        description: data.description || 'No description provided.',
+        skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
+        project_link: data.projectLink,
+        contact_info: data.contactInfo || user.profile.email || '',
+        collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
+        media: [],
+      });
+      setProjects(ps => [newProject, ...ps]);
+      toast('Project added.');
+    } catch {
+      toast('Failed to add project.');
+    }
   };
 
-  const handleEditProject = (data: ProjectFormData) => {
+  const handleEditProject = async (data: ProjectFormData) => {
     if (!editProject) return;
-    setProjects(ps => ps.map(p => p.id === editProject.id ? {
-      ...p,
-      title: data.title,
-      collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
-      skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
-      description: data.description || p.description,
-      projectLink: data.projectLink,
-      contactInfo: data.contactInfo || p.contactInfo,
-    } : p));
-    toast('Project updated.');
-    setEditProject(null);
+    try {
+      const updated = await api.projects.edit(editProject.id, {
+        title: data.title,
+        description: data.description || editProject.description,
+        skills: data.skills.split(',').map(s => s.trim()).filter(Boolean),
+        project_link: data.projectLink,
+        contact_info: data.contactInfo || editProject.contactInfo,
+        collaborators: data.collaborators.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name, tag: '' })),
+      });
+      setProjects(ps => ps.map(p => p.id === editProject.id ? updated : p));
+      toast('Project updated.');
+      setEditProject(null);
+    } catch {
+      toast('Failed to update project.');
+    }
   };
 
   const handleSaveProfile = ({ headline, avatarColor }: { headline: string; avatarColor: string }) => {
