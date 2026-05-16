@@ -1,24 +1,24 @@
-import { useMemo, useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatTile } from '@/components/recruiter/stat-tile';
-import { ApplicantRow } from '@/components/recruiter/applicant-row';
-import { ApplicantDetailModal } from '@/components/recruiter/applicant-detail-modal';
-import { RoleManageCard } from '@/components/recruiter/role-manage-card';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
+import { Icon } from '@/components/icon';
+import { ApplicantDetailModal } from '@/components/recruiter/applicant-detail-modal';
+import { ApplicantRow } from '@/components/recruiter/applicant-row';
 import { CandidateSearch } from '@/components/recruiter/candidate-search';
+import type { PostDraft } from '@/components/recruiter/post-role-modal';
 import { PostRoleModal } from '@/components/recruiter/post-role-modal';
-import { SectionHeading } from '@/components/ui/section-heading';
+import { RoleManageCard } from '@/components/recruiter/role-manage-card';
+import { StatTile } from '@/components/recruiter/stat-tile';
 import { Card } from '@/components/ui/card';
 import { Modal } from '@/components/ui/modal';
+import { SectionHeading } from '@/components/ui/section-heading';
 import { Toast } from '@/components/ui/toast';
 import { Tooltip } from '@/components/ui/tooltip';
-import { Icon } from '@/components/icon';
+import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import * as api from '@/services/api';
-import { C, F } from '@/constants/theme';
-import type { PostDraft } from '@/components/recruiter/post-role-modal';
 import type { Applicant, ApplicantStatus, Job } from '@/types';
+import { useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Tab = 'dashboard' | 'roles' | 'candidates';
 
@@ -39,9 +39,9 @@ export default function RecruiterScreen() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
 
   const myJobs = useMemo(() => {
-    if (!user?.profile.id) return [];
-    return jobs.filter(j => j.poster?.userId === user.profile.id || j.company === user.profile.company);
-  }, [jobs, user?.profile.id, user?.profile.company]);
+    if (!user) return [];
+    return jobs.filter(j => j.company === user.profile.company);
+  }, [jobs, user?.profile.company]);
 
   const myJobIds = myJobs.map(j => j.id);
   const myApplicants = applicants.filter(a => myJobIds.includes(a.jobId));
