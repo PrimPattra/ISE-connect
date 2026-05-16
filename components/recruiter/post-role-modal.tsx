@@ -34,6 +34,13 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
   const [compAmount, setCompAmount] = useState('');
   const [compPeriod, setCompPeriod] = useState('month');
   const [compCurrency, setCompCurrency] = useState('THB');
+  const [locType, setLocType] = useState('On-site');
+  const [locCity, setLocCity] = useState('Bangkok');
+
+  const parseLocation = (loc: string) => {
+    const parts = loc.split(' · ');
+    return { type: parts[0] ?? 'On-site', city: parts[1] ?? 'Bangkok' };
+  };
 
   useEffect(() => {
     if (open) {
@@ -42,6 +49,9 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
       setCompAmount('');
       setCompPeriod('month');
       setCompCurrency('THB');
+      const loc = parseLocation(initialDraft?.location ?? EMPTY_DRAFT.location);
+      setLocType(loc.type);
+      setLocCity(loc.city);
     }
   }, [open]);
 
@@ -51,6 +61,8 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     setCompAmount('');
     setCompPeriod('month');
     setCompCurrency('THB');
+    setLocType('On-site');
+    setLocCity('Bangkok');
   };
 
   const upd = <K extends keyof PostDraft>(k: K, v: PostDraft[K]) => setD(x => ({ ...x, [k]: v }));
@@ -61,7 +73,8 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     const comp = compAmount.trim()
       ? `${SYMBOL[compCurrency] ?? compCurrency}${compAmount}/${PERIOD_SHORT[compPeriod] ?? compPeriod}`
       : 'Negotiable';
-    return { ...d, comp };
+    const location = locType === 'Remote' ? 'Remote' : `${locType} · ${locCity.trim() || 'Bangkok'}`;
+    return { ...d, comp, location };
   };
 
   return (
@@ -94,7 +107,26 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
         <View style={s.fields}>
           <TextField label="Role title" placeholder="e.g. Software Engineering Intern" value={d.title} onChangeText={v => upd('title', v)} />
           <SelectField label="Type" value={d.type} onChange={v => upd('type', v)} options={['Internship', 'Full-time', 'Freelance', 'Research'].map(v => ({ value: v, label: v }))} />
-          <SelectField label="Location" value={d.location} onChange={v => upd('location', v)} options={['On-site · Bangkok', 'Hybrid · Bangkok', 'Remote'].map(v => ({ value: v, label: v }))} />
+          <View>
+            <Text style={s.fieldLabel}>Location</Text>
+            <View style={s.locationRow}>
+              <View style={{ flex: 1 }}>
+                <TextField
+                  placeholder="e.g. Bangkok"
+                  value={locCity}
+                  onChangeText={setLocCity}
+                  editable={locType !== 'Remote'}
+                />
+              </View>
+              <View style={s.locationSelect}>
+                <SelectField
+                  value={locType}
+                  onChange={setLocType}
+                  options={['On-site', 'Hybrid', 'Remote'].map(v => ({ value: v, label: v }))}
+                />
+              </View>
+            </View>
+          </View>
 
           <View>
             <Text style={s.fieldLabel}>Job description</Text>
@@ -193,6 +225,8 @@ const s = StyleSheet.create({
   tabTextActive: { color: C.paper },
   fields: { gap: 14 },
   fieldLabel: { fontSize: 12, fontWeight: '500', color: C.ink2, marginBottom: 8 },
+  locationRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  locationSelect: { width: 110 },
   compBox: { borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 14, backgroundColor: C.paper2, gap: 10 },
   textarea: { backgroundColor: C.paper, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: C.ink, minHeight: 110 },
   postedAs: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.paper2, borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 12 },
