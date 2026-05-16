@@ -1,10 +1,12 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Card } from '@/components/ui/card';
-import { TagPill } from '@/components/ui/tag-pill';
-import { ApplicantRow } from './applicant-row';
 import { Icon } from '@/components/icon';
+import { Card } from '@/components/ui/card';
+import { Modal } from '@/components/ui/modal';
+import { TagPill } from '@/components/ui/tag-pill';
 import { C, F } from '@/constants/theme';
 import type { Applicant, ApplicantStatus, Job } from '@/types';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ApplicantRow } from './applicant-row';
 
 const STAGES: ApplicantStatus[] = ['New', 'Reviewing', 'Interview', 'Hired', 'Pass'];
 
@@ -17,6 +19,7 @@ interface Props {
 }
 
 export function RoleManageCard({ job, applicants, onMove, onOpen, onClose }: Props) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const grouped = STAGES.map(s => ({ stage: s, count: applicants.filter(a => a.status === s).length }));
   return (
     <Card style={s.card}>
@@ -34,12 +37,33 @@ export function RoleManageCard({ job, applicants, onMove, onOpen, onClose }: Pro
             <Icon name="edit" size={13} color={C.ink2} />
             <Text style={s.smallBtnText}>Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={s.smallBtn} onPress={() => onClose(job.id)}>
+          <TouchableOpacity style={s.smallBtn} onPress={() => setConfirmOpen(true)}>
             <Icon name="x" size={13} color={C.ink2} />
             <Text style={s.smallBtnText}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Close role?"
+        footer={
+          <>
+            <TouchableOpacity style={[btn.base, btn.ghost]} onPress={() => setConfirmOpen(false)}>
+              <Text style={btn.ghostText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[btn.base, btn.danger]} onPress={() => { setConfirmOpen(false); onClose(job.id); }}>
+              <Icon name="x" size={14} color={C.paper} />
+              <Text style={btn.dangerText}>Close role</Text>
+            </TouchableOpacity>
+          </>
+        }
+      >
+        <Text style={s.confirmText}>
+          "{job.title}" will be removed from the board.{"\n"}This cannot be undone.
+        </Text>
+      </Modal>
 
       <View style={s.stages}>
         {grouped.map(g => (
@@ -75,4 +99,13 @@ const s = StyleSheet.create({
   applicants: {},
   empty: { borderWidth: 1, borderStyle: 'dashed', borderColor: C.line, borderRadius: 8, padding: 20, alignItems: 'center' },
   emptyText: { fontSize: 13, color: C.muted, textAlign: 'center' },
+  confirmText: { fontSize: 14, color: C.muted, lineHeight: 22 },
+});
+
+const btn = StyleSheet.create({
+  base: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10 },
+  ghost: { borderWidth: 1, borderColor: C.line },
+  ghostText: { fontSize: 14, color: C.ink },
+  danger: { backgroundColor: C.ink },
+  dangerText: { fontSize: 14, color: C.paper, fontWeight: '500' },
 });
