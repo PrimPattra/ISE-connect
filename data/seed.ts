@@ -225,12 +225,58 @@ export const SEED_PROJECTS: Project[] = [
 ];
 
 export const SEED_APPLICANTS: Applicant[] = [
-  { id: 'a1', jobId: 'j1', name: 'Proudmorakod T.', tag: 'ICE#21', track: 'Computer', headline: 'CV + robotics, looking for Jun–Aug', skills: ['Python', 'ROS', 'PyTorch'], status: 'New', applied: 'today' },
-  { id: 'a2', jobId: 'j1', name: 'Tan W.', tag: 'ICE#22', track: 'Computer', headline: 'Hardware-curious; built a line-follower at ICE#22 demo', skills: ['C++', 'Arduino', 'Linux'], status: 'Reviewing', applied: 'yesterday' },
-  { id: 'a3', jobId: 'j2', name: 'Mint P.', tag: 'ICE#20', track: 'Computer', headline: 'Shipped 4 production Next.js apps', skills: ['Next.js', 'TypeScript', 'Tailwind'], status: 'Interview', applied: '2d ago' },
-  { id: 'a4', jobId: 'j2', name: 'Boss S.', tag: 'ICE#19', track: 'Computer', headline: 'Frontend + a11y nerd', skills: ['React', 'TypeScript', 'Cypress'], status: 'New', applied: '3d ago' },
-  { id: 'a5', jobId: 'j6', name: 'Nam K.', tag: 'ICE#21', track: 'Computer', headline: 'NLP coursework, did a Thai-English aligner project', skills: ['Python', 'PyTorch', 'HuggingFace'], status: 'Interview', applied: '4d ago' },
-  { id: 'a6', jobId: 'j6', name: 'June A.', tag: 'ICE#20', track: 'Computer', headline: 'ML eval pipelines + LLM tooling', skills: ['Python', 'LangChain', 'AWS'], status: 'Hired', applied: '1w ago' },
+  {
+    id: 'a1', jobId: 'j1', name: 'Proudmorakod T.', tag: 'ICE#21', track: 'Computer',
+    headline: 'CV + robotics, looking for Jun–Aug', skills: ['Python', 'ROS', 'PyTorch'],
+    status: 'New', applied: 'today', avatarColor: '#0d9488',
+    projects: [
+      { title: 'Phra Nakhon — walking-tour audio guide', skills: ['React Native', 'Whisper', 'UI/UX'] },
+      { title: 'Warehouse arm perception module', skills: ['Python', 'ROS', 'OpenCV'] },
+    ],
+  },
+  {
+    id: 'a2', jobId: 'j1', name: 'Tan W.', tag: 'ICE#22', track: 'Computer',
+    headline: 'Hardware-curious; built a line-follower at ICE#22 demo', skills: ['C++', 'Arduino', 'Linux'],
+    status: 'Reviewing', applied: 'yesterday', avatarColor: '#7c3aed',
+    projects: [
+      { title: 'Line-follower robot — ICE#22 Demo Day', skills: ['C++', 'Arduino', 'PID control'] },
+    ],
+  },
+  {
+    id: 'a3', jobId: 'j2', name: 'Mint P.', tag: 'ICE#20', track: 'Computer',
+    headline: 'Shipped 4 production Next.js apps', skills: ['Next.js', 'TypeScript', 'Tailwind'],
+    status: 'Interview', applied: '2d ago', avatarColor: '#0891b2',
+    projects: [
+      { title: 'ISE Alumni directory — Next.js + Supabase', skills: ['Next.js', 'TypeScript', 'Supabase'] },
+      { title: 'Real-time collab whiteboard', skills: ['Next.js', 'WebSocket', 'Tailwind'] },
+    ],
+  },
+  {
+    id: 'a4', jobId: 'j2', name: 'Boss S.', tag: 'ICE#19', track: 'Computer',
+    headline: 'Frontend + a11y nerd', skills: ['React', 'TypeScript', 'Cypress'],
+    status: 'New', applied: '3d ago', avatarColor: '#b45309',
+    projects: [
+      { title: 'Accessibility audit toolkit for Thai gov sites', skills: ['React', 'Axe-core', 'TypeScript'] },
+    ],
+  },
+  {
+    id: 'a5', jobId: 'j6', name: 'Nam K.', tag: 'ICE#21', track: 'Computer',
+    headline: 'NLP coursework, did a Thai-English aligner project', skills: ['Python', 'PyTorch', 'HuggingFace'],
+    status: 'Interview', applied: '4d ago', avatarColor: '#065f46',
+    projects: [
+      { title: 'Thai-English sentence aligner', skills: ['Python', 'HuggingFace', 'NLTK'] },
+      { title: 'Low-resource NLP benchmark — ISE thesis', skills: ['PyTorch', 'Weights & Biases', 'Python'] },
+    ],
+  },
+  {
+    id: 'a6', jobId: 'j6', name: 'June A.', tag: 'ICE#20', track: 'Computer',
+    headline: 'ML eval pipelines + LLM tooling', skills: ['Python', 'LangChain', 'AWS'],
+    status: 'Hired', applied: '1w ago', avatarColor: '#9f1239',
+    projects: [
+      { title: 'LLM eval pipeline — automated red-teaming', skills: ['Python', 'LangChain', 'AWS Lambda'] },
+      { title: 'Thai RAG chatbot for internal docs', skills: ['Python', 'LlamaIndex', 'FastAPI'] },
+    ],
+  },
 ];
 
 export const SEED_REGISTERED_USERS = [
