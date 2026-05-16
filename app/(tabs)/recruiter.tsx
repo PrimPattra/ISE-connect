@@ -44,22 +44,23 @@ export default function RecruiterScreen() {
   }, [jobs, user?.profile.company]);
 
   const myJobIds = myJobs.map(j => j.id);
+  const myJobIdsStr = myJobIds.join(',');
   const myApplicants = applicants.filter(a => myJobIds.includes(a.jobId));
 
-  // Fetch applicants for all recruiter's jobs
   useEffect(() => {
-    if (myJobIds.length === 0) return;
+    if (!myJobIdsStr) return;
     Promise.all(myJobIds.map(id => api.applications.listForJob(id)))
       .then(results => setApplicants(results.flat()))
       .catch(() => {});
-  }, [myJobIds.join(',')]);
+  }, [myJobIdsStr]);
 
   const move = async (aid: string, status: ApplicantStatus) => {
+    const prev = applicants.find(a => a.id === aid)?.status;
     setApplicants(xs => xs.map(a => a.id === aid ? { ...a, status } : a));
     try {
       await api.applications.updateStatus(aid, status);
     } catch {
-      setApplicants(xs => xs.map(a => a.id === aid ? { ...a, status: a.status } : a));
+      setApplicants(xs => xs.map(a => a.id === aid ? { ...a, status: prev ?? a.status } : a));
     }
   };
 
