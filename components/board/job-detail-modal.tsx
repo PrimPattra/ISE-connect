@@ -48,10 +48,12 @@ export function JobDetailModal({ job, onClose, isRecruiter }: Props) {
       </View>
       <Text style={s.blurb}>{job.blurb}</Text>
 
-      <Text style={s.h5}>What you'll do</Text>
-      {['Own one core feature end-to-end with weekly demos.', 'Pair with a senior ICE alum on architecture decisions.', 'Write tests, ship to staging, and present at bi-weekly all-hands.'].map(l => (
-        <View key={l} style={s.li}><Text style={s.bullet}>·</Text><Text style={s.liText}>{l}</Text></View>
-      ))}
+      {!!job.duties && (
+        <>
+          <Text style={s.h5}>What you'll do</Text>
+          <Text style={s.blurb}>{job.duties}</Text>
+        </>
+      )}
 
       <Text style={s.h5}>We're looking for</Text>
       <View style={s.chips}>{job.skills.map(sk => <View key={sk} style={chip.wrap}><Text style={chip.text}>{sk}</Text></View>)}</View>

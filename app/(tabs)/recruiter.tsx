@@ -55,7 +55,7 @@ export default function RecruiterScreen() {
 
   const edit = (jid: string, d: PostDraft) => {
     setJobs(js => js.map(j => j.id === jid
-      ? { ...j, title: d.title, type: d.type as any, location: d.location, comp: d.comp, period: d.period, skills: d.skills, blurb: d.blurb, applicationLink: d.applicationLink }
+      ? { ...j, title: d.title, type: d.type as any, location: d.location, comp: d.comp, period: d.period, skills: d.skills, blurb: d.blurb, duties: d.duties, applicationLink: d.applicationLink }
       : j
     ));
     setEditingJob(null);
@@ -75,6 +75,7 @@ export default function RecruiterScreen() {
       skills: Array.isArray(d.skills) ? d.skills : d.skills.split(',').map((s: string) => s.trim()).filter(Boolean),
       poster: { name: user!.profile.name, tag: user!.profile.cohort || 'Employer', role: user!.profile.position },
       blurb: d.blurb || 'Ask the recruiter for the full description.',
+      duties: d.duties || '',
       period: d.period || '',
       applicationLink: d.applicationLink || '',
       saved: false,
