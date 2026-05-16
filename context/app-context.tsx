@@ -76,7 +76,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     }
     fetchAll();
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.profile.email]);
 
   function updateUser(u: User) {
     setUser(u);
