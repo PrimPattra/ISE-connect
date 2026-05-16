@@ -2,7 +2,7 @@ import { Icon } from '@/components/icon';
 import { Modal } from '@/components/ui/modal';
 import { SelectField } from '@/components/ui/select-field';
 import { TextField } from '@/components/ui/text-field';
-import { C, F } from '@/constants/theme';
+import { C } from '@/constants/theme';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -38,6 +38,9 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
   const [d, setD] = useState<PostDraft>({ ...EMPTY_DRAFT, ...initialDraft });
   const [customSkill, setCustomSkill] = useState('');
   const [showCustom, setShowCustom] = useState(false);
+  const [compAmount, setCompAmount] = useState('');
+  const [compPeriod, setCompPeriod] = useState('month');
+  const [compCurrency, setCompCurrency] = useState('THB');
 
   useEffect(() => {
     if (open) {
@@ -45,6 +48,9 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
       setD({ ...EMPTY_DRAFT, ...initialDraft });
       setCustomSkill('');
       setShowCustom(false);
+      setCompAmount('');
+      setCompPeriod('month');
+      setCompCurrency('THB');
     }
   }, [open]);
 
@@ -53,6 +59,9 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     setD(EMPTY_DRAFT);
     setCustomSkill('');
     setShowCustom(false);
+    setCompAmount('');
+    setCompPeriod('month');
+    setCompCurrency('THB');
   };
 
   const upd = <K extends keyof PostDraft>(k: K, v: PostDraft[K]) => setD(x => ({ ...x, [k]: v }));
@@ -78,7 +87,12 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
     const extras = customSkill.trim() && !d.skills.includes(customSkill.trim())
       ? [...d.skills, customSkill.trim()]
       : d.skills;
-    return { ...d, skills: extras };
+    const SYMBOL: Record<string, string> = { THB: '฿', USD: '$', EUR: '€' };
+    const PERIOD_SHORT: Record<string, string> = { month: 'mo', hour: 'hr', year: 'yr' };
+    const comp = compAmount.trim()
+      ? `${SYMBOL[compCurrency] ?? compCurrency}${compAmount}/${PERIOD_SHORT[compPeriod] ?? compPeriod}`
+      : 'Negotiable';
+    return { ...d, skills: extras, comp };
   };
 
   return (
@@ -113,7 +127,14 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
           <TextField label="Role title" placeholder="e.g. Software Engineering Intern" value={d.title} onChangeText={v => upd('title', v)} />
           <SelectField label="Type" value={d.type} onChange={v => upd('type', v)} options={['Internship', 'Full-time', 'Freelance', 'Research'].map(v => ({ value: v, label: v }))} />
           <SelectField label="Location" value={d.location} onChange={v => upd('location', v)} options={['On-site · Bangkok', 'Hybrid · Bangkok', 'Remote'].map(v => ({ value: v, label: v }))} />
-          <TextField label="Compensation" placeholder="e.g. ฿28,000/mo" value={d.comp} onChangeText={v => upd('comp', v)} />
+          <View>
+            <Text style={s.fieldLabel}>Compensation</Text>
+            <View style={s.compBox}>
+              <TextField label="Amount" placeholder="28000" value={compAmount} onChangeText={setCompAmount} keyboardType="numeric" />
+              <SelectField label="Period" value={compPeriod} onChange={setCompPeriod} options={[{ value: 'month', label: 'per month' }, { value: 'hour', label: 'per hour' }, { value: 'year', label: 'per year' }]} />
+              <SelectField label="Currency" value={compCurrency} onChange={setCompCurrency} options={[{ value: 'THB', label: 'THB ฿' }, { value: 'USD', label: 'USD $' }, { value: 'EUR', label: 'EUR €' }]} />
+            </View>
+          </View>
           <TextField label="Period" placeholder="e.g. Off-cycle · Jun–Aug" value={d.period} onChangeText={v => upd('period', v)} />
 
           {/* Skills multi-select */}
@@ -232,6 +253,7 @@ const s = StyleSheet.create({
   tabTextActive: { color: C.paper },
   fields: { gap: 14 },
   fieldLabel: { fontSize: 12, fontWeight: '500', color: C.ink2, marginBottom: 8 },
+  compBox: { borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 14, backgroundColor: C.paper2, gap: 10 },
   skillChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   skillChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 99, borderWidth: 1, borderColor: C.line, backgroundColor: C.paper },
   skillChipActive: { backgroundColor: C.teal600, borderColor: C.teal600 },
