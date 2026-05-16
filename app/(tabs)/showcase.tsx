@@ -10,6 +10,7 @@ import { Toast } from '@/components/ui/toast';
 import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import { useAppContext } from '@/context/app-context';
+import * as api from '@/services/api';
 import { C } from '@/constants/theme';
 import type { Project } from '@/types';
 
@@ -21,16 +22,31 @@ export default function ShowcaseScreen() {
 
   const filtered = projects.filter(p => !q || `${p.title} ${p.skills.join(' ')}`.toLowerCase().includes(q.toLowerCase()));
 
-  const toggleLike = (id: string) => {
+  const toggleLike = async (id: string) => {
     setProjects(ps => ps.map(p => p.id === id
       ? { ...p, liked: !p.liked, likes: p.liked ? p.likes - 1 : p.likes + 1 }
       : p
     ));
+    try {
+      const { liked, likes } = await api.projects.toggleLike(id);
+      setProjects(ps => ps.map(p => p.id === id ? { ...p, liked, likes } : p));
+    } catch {
+      // revert on failure
+      setProjects(ps => ps.map(p => p.id === id
+        ? { ...p, liked: !p.liked, likes: p.liked ? p.likes - 1 : p.likes + 1 }
+        : p
+      ));
+    }
   };
 
-  const openProject = (id: string) => {
+  const openProject = async (id: string) => {
     setOpenId(id);
-    setProjects(ps => ps.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
+    try {
+      const updated = await api.projects.get(id);
+      setProjects(ps => ps.map(p => p.id === id ? updated : p));
+    } catch {
+      setProjects(ps => ps.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
+    }
   };
 
   return (

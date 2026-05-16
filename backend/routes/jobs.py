@@ -69,6 +69,33 @@ def toggle_save(job_id):
     return jsonify({'saved': saved}), 200
 
 
+@jobs_bp.get('/mine')
+@recruiter_only
+def my_jobs():
+    docs = list(jobs_col.find({'poster.user_id': g.user_id}).sort('created_at', -1))
+    return jsonify([JobDoc.from_mongo(d).to_response(g.user_id) for d in docs]), 200
+
+
+@jobs_bp.patch('/<job_id>')
+@recruiter_only
+def edit_job(job_id):
+    raw = jobs_col.find_one({'_id': ObjectId(job_id)})
+    if not raw:
+        return jsonify({'error': 'Job not found'}), 404
+    if raw['poster']['user_id'] != g.user_id:
+        return jsonify({'error': 'You can only edit your own jobs'}), 403
+
+    body = request.get_json(force=True) or {}
+    allowed = {'title', 'type', 'location', 'comp', 'period', 'skills', 'blurb', 'duties', 'application_link'}
+    update = {k: v for k, v in body.items() if k in allowed}
+    if not update:
+        return jsonify({'error': 'No valid fields to update'}), 422
+
+    jobs_col.update_one({'_id': ObjectId(job_id)}, {'$set': update})
+    updated = jobs_col.find_one({'_id': ObjectId(job_id)})
+    return jsonify(JobDoc.from_mongo(updated).to_response(g.user_id)), 200
+
+
 @jobs_bp.delete('/<job_id>')
 @recruiter_only
 def delete_job(job_id):

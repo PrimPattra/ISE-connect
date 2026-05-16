@@ -115,6 +115,7 @@ export interface RecruiterProfile {
 }
 
 export interface UserProfile {
+  id?: string;
   name: string;
   email: string;
   firstName?: string;

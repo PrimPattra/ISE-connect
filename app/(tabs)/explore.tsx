@@ -14,6 +14,7 @@ import { Toast } from '@/components/ui/toast';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
+import * as api from '@/services/api';
 import { SEED_INTERVIEWS, SEED_QA } from '@/data/seed';
 import { useState } from 'react';
 import { LayoutAnimation, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -38,41 +39,47 @@ export default function ReviewsScreen() {
 
   const filtered = reviews.filter(r => !q || `${r.company} ${r.role}`.toLowerCase().includes(q.toLowerCase()));
 
-  const submit = (d: any) => {
-    const newR = {
-      id: 'r' + (reviews.length + 1),
-      company: d.company || 'Unnamed company',
-      role: d.role || '—',
-      reviewText: d.reviewText || '—',
-      salary: d.includeSalary && d.amount
-        ? { amount: parseInt(d.amount, 10) || 0, currency: d.currency, period: d.period, role: d.salaryRole || d.role || '—' }
-        : null,
-      when: '2026 · Just now',
-      by: 'Anonymous · You',
-    };
-    setReviews(rs => [newR, ...rs]);
-    setOpenWrite(false);
-    toast('Review posted anonymously.');
+  const submit = async (d: any) => {
+    try {
+      const newR = await api.reviews.create({
+        company: d.company || 'Unnamed company',
+        role: d.role || '—',
+        review_text: d.reviewText || '—',
+        salary: d.includeSalary && d.amount
+          ? { amount: parseInt(d.amount, 10) || 0, currency: d.currency, period: d.period, role: d.salaryRole || d.role || '—' }
+          : null,
+        when: '2026 · Just now',
+      });
+      setReviews(rs => [newR, ...rs]);
+      setOpenWrite(false);
+      toast('Review posted anonymously.');
+    } catch {
+      toast('Failed to post review.');
+    }
   };
 
-  const submitResource = (d: any) => {
-    const resolvedKind = d.kind === 'other' ? (d.customKind || 'Other') : d.kind;
-    setResources(rs => [{
-      id: 'res' + (rs.length + 1),
-      kind: resolvedKind,
-      title: d.title || 'Untitled resource',
-      author: user
-        ? user.profile.cohort
-          ? `${user.profile.name} · ${user.profile.cohort}`
-          : user.profile.name
-        : 'Anonymous',
-      mins: 0,
-      description: d.description || undefined,
-      url: d.url || undefined,
-      image: d.image || undefined,
-    }, ...rs]);
-    setOpenWriteResource(false);
-    toast('Resource shared.');
+  const submitResource = async (d: any) => {
+    try {
+      const resolvedKind = d.kind === 'other' ? (d.customKind || 'Other') : d.kind;
+      const newRes = await api.resources.create({
+        kind: resolvedKind,
+        title: d.title || 'Untitled resource',
+        author: user
+          ? user.profile.cohort
+            ? `${user.profile.name} · ${user.profile.cohort}`
+            : user.profile.name
+          : 'Anonymous',
+        mins: 0,
+        description: d.description || undefined,
+        url: d.url || undefined,
+        image: d.image || undefined,
+      });
+      setResources(rs => [newRes, ...rs]);
+      setOpenWriteResource(false);
+      toast('Resource shared.');
+    } catch {
+      toast('Failed to share resource.');
+    }
   };
 
   return (
