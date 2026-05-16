@@ -83,7 +83,7 @@ export interface ProjectFormData {
 export interface Project {
   id: string;
   title: string;
-  by: { name: string; tag: string };
+  by: { name: string; tag: string; userId?: string };
   collaborators: { name: string; tag: string }[];
   skills: string[];
   description: string;

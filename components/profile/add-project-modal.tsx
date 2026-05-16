@@ -4,7 +4,7 @@ import { SkillPicker } from '@/components/ui/skill-picker';
 import { TextField } from '@/components/ui/text-field';
 import { C, F } from '@/constants/theme';
 import type { ProjectFormData } from '@/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
@@ -21,6 +21,13 @@ export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: P
   const isEdit = !!initialData;
   const [form, setForm] = useState<ProjectFormData>(initialData ?? EMPTY);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      setForm(initialData ?? EMPTY);
+      setError('');
+    }
+  }, [open]);
 
   const upd = (k: keyof ProjectFormData, v: string) => {
     setForm(f => ({ ...f, [k]: v }));

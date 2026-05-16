@@ -15,7 +15,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import { useAppContext } from '@/context/app-context';
 import type { Project, ProjectFormData } from '@/types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -30,12 +30,21 @@ export default function ProfileScreen() {
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [addSkillOpen, setAddSkillOpen] = useState(false);
   const [pendingSkills, setPendingSkills] = useState<string[]>([]);
+  const [appliedCount, setAppliedCount] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
   const savedY = useRef(0);
   const portfolioY = useRef(0);
+
+  useEffect(() => {
+    if (!user) return;
+    api.applications.mine().then(apps => setAppliedCount(apps.length)).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.profile.email]);
+
   if (!user) return null;
 
   const saved = jobs.filter(j => j.saved);
+  const myProjects = projects.filter(p => p.by.userId === user.profile.id);
   const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
 
   const handleAddProject = async (data: ProjectFormData) => {
@@ -117,12 +126,12 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
-          <Text style={s.headline}>"{user.profile.headline}"</Text>
+          <Text style={s.headline}>"{user.profile.headline || '—'}"</Text>
           <View style={s.darkDivider} />
           <View style={s.stats}>
             <ProfileStat label="Saved" value={saved.length} dark />
-            <ProfileStat label="Applied" value={3} dark />
-            <ProfileStat label="Projects" value={projects.length} dark />
+            <ProfileStat label="Applied" value={appliedCount} dark />
+            <ProfileStat label="Projects" value={myProjects.length} dark />
           </View>
           <View style={s.darkDivider} />
           <Text style={s.skillsLabel}>Skills</Text>
@@ -172,7 +181,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           <View style={s.portfolioGrid}>
-            {projects.slice(0, 4).map(p => (
+            {myProjects.slice(0, 4).map(p => (
               <TouchableOpacity key={p.id} style={s.portfolioItem} onPress={() => setViewProject(p)}>
                 <View style={s.portfolioMain}>
                   <Text style={s.portfolioTitle} numberOfLines={1}>{p.title}</Text>
