@@ -87,7 +87,7 @@ export const auth = {
 export const jobs = {
   list(type?: string): Promise<Job[]> {
     const qs = type ? `?type=${encodeURIComponent(type)}` : '';
-    return get<Job[]>(`/jobs${qs}`, true);
+    return get<Job[]>(`/jobs/${qs}`, true);
   },
 
   get(id: string): Promise<Job> {
@@ -169,7 +169,7 @@ export const projects = {
 export const reviews = {
   list(company?: string): Promise<Review[]> {
     const qs = company ? `?company=${encodeURIComponent(company)}` : '';
-    return get<Review[]>(`/reviews${qs}`);
+    return get<Review[]>(`/reviews/${qs}`);
   },
 
   create(payload: object): Promise<Review> {
@@ -182,7 +182,7 @@ export const reviews = {
 export const resources = {
   list(kind?: string): Promise<Resource[]> {
     const qs = kind ? `?kind=${encodeURIComponent(kind)}` : '';
-    return get<Resource[]>(`/resources${qs}`);
+    return get<Resource[]>(`/resources/${qs}`);
   },
 
   create(payload: object): Promise<Resource> {
