@@ -122,7 +122,7 @@ export default function AuthScreen() {
       setAuthResult(user, token);
       toast('Welcome to ISE Connect.');
     } catch (e: any) {
-      setErrors({ email: e.message });
+      toast(e.message ?? 'Registration failed. Please try again.');
       setShowConfirm(false);
     }
   };
