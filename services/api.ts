@@ -21,7 +21,7 @@ export async function clearToken(): Promise<void> {
 // ── Base fetch ────────────────────────────────────────────────────────────────
 
 async function req<T>(method: string, path: string, body?: object, auth = true): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' };
   if (auth) {
     const token = await getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
