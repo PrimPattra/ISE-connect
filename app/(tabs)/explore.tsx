@@ -48,7 +48,7 @@ export default function ReviewsScreen() {
         salary: d.includeSalary && d.amount
           ? { amount: parseInt(d.amount, 10) || 0, currency: d.currency, period: d.period, role: d.salaryRole || d.role || '—' }
           : null,
-        when: '2026 · Just now',
+        when: `${new Date().getFullYear()} · Just now`,
       });
       setReviews(rs => [newR, ...rs]);
       setOpenWrite(false);

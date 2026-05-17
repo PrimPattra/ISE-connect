@@ -5,6 +5,7 @@ import { TagPill } from '@/components/ui/tag-pill';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Applicant } from '@/types';
+import { getInitials } from '@/utils/time';
 
 interface Props { applicants: Applicant[] }
 
@@ -48,7 +49,7 @@ export function CandidateSearch({ applicants }: Props) {
 
       {filtered.map(a => (
         <View key={a.id} style={s.candidate}>
-          <View style={s.avatar}><Text style={s.avatarText}>{a.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</Text></View>
+          <View style={s.avatar}><Text style={s.avatarText}>{getInitials(a.name)}</Text></View>
           <View style={s.info}>
             <View style={s.nameRow}>
               <Text style={s.name}>{a.name}</Text>

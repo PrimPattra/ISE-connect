@@ -57,7 +57,7 @@ export function PostRoleModal({ open, onClose, onPost, recruiterCompany, recruit
       setLocType(loc.type);
       setLocCity(loc.city);
     }
-  }, [open]);
+  }, [open, initialDraft]);
 
   const reset = () => {
     setTab('details');

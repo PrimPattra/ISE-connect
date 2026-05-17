@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Job } from '@/types';
+import { getInitials } from '@/utils/time';
 
 interface Props {
   job: Job | null;
@@ -14,7 +15,7 @@ interface Props {
 
 export function JobDetailModal({ job, onClose, isRecruiter }: Props) {
   if (!job) return null;
-  const initials = job.poster.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
+  const initials = getInitials(job.poster.name);
 
   const handleApply = () => {
     if (job.applicationLink) {
