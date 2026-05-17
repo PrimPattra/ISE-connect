@@ -174,6 +174,7 @@ export default function ProfileScreen() {
           }
         </Card>
 
+        {user.role === 'hunter' && (
         <Card style={s.section}>
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Your portfolio</Text>
@@ -195,6 +196,7 @@ export default function ProfileScreen() {
             ))}
           </View>
         </Card>
+        )}
       </ScrollView>
 
       <JobDetailModal job={viewJob} onClose={() => setViewJob(null)} />
