@@ -27,7 +27,7 @@ export function AddProjectModal({ open, onClose, onAdd, initialData, onEdit }: P
       setForm(initialData ?? EMPTY);
       setError('');
     }
-  }, [open]);
+  }, [open, initialData]);
 
   const upd = (k: keyof ProjectFormData, v: string) => {
     setForm(f => ({ ...f, [k]: v }));
