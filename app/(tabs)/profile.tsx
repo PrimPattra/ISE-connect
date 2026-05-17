@@ -37,7 +37,7 @@ export default function ProfileScreen() {
   const portfolioY = useRef(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.role !== 'hunter') return;
     api.applications.mine().then(apps => setAppliedCount(apps.length)).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.profile.email]);
