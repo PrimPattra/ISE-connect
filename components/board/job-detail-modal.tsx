@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Job } from '@/types';
-import { getInitials } from '@/utils/time';
+import { getInitials, timeAgo } from '@/utils/time';
 
 interface Props {
   job: Job | null;
@@ -45,7 +45,7 @@ export function JobDetailModal({ job, onClose, isRecruiter }: Props) {
       <View style={s.tags}>
         <TagPill>{job.type}</TagPill>
         <TagPill>{job.period}</TagPill>
-        <Text style={s.posted}>{job.posted}</Text>
+        <Text style={s.posted}>{timeAgo(job.posted)}</Text>
       </View>
       <Text style={s.blurb}>{job.blurb}</Text>
 

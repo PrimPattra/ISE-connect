@@ -1,4 +1,5 @@
 import { Icon } from '@/components/icon';
+import { timeAgo } from '@/utils/time';
 import { Card } from '@/components/ui/card';
 import { Modal } from '@/components/ui/modal';
 import { TagPill } from '@/components/ui/tag-pill';
@@ -32,7 +33,7 @@ export function RoleManageCard({ job, applicants, onMove, onOpen, onClose, onEdi
             <TagPill>{job.type}</TagPill>
             <TagPill>{job.location}</TagPill>
           </View>
-          <Text style={s.meta}>{applicants.length} applicants · posted {job.posted}</Text>
+          <Text style={s.meta}>{applicants.length} applicants · posted {timeAgo(job.posted)}</Text>
         </TouchableOpacity>
         <View style={s.actions}>
           <TouchableOpacity style={s.smallBtn} onPress={() => onEditOpen(job)}>

@@ -4,7 +4,7 @@ import { TagPill } from '@/components/ui/tag-pill';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Applicant, ApplicantStatus } from '@/types';
-import { getInitials } from '@/utils/time';
+import { getInitials, timeAgo } from '@/utils/time';
 
 interface Props {
   a: Applicant | null;
@@ -39,7 +39,7 @@ export function ApplicantDetailModal({ a, onClose, onMove }: Props) {
         </View>
         <View style={s.profileInfo}>
           <Text style={s.name}>{a.name}</Text>
-          <Text style={s.appliedText}>Applied {a.applied}</Text>
+          <Text style={s.appliedText}>Applied {timeAgo(a.applied)}</Text>
           <View style={s.tags}>
             <TagPill dark>{a.tag}</TagPill>
             <TagPill>{a.track} track</TagPill>
