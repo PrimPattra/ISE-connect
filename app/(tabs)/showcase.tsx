@@ -45,7 +45,7 @@ export default function ShowcaseScreen() {
       const updated = await api.projects.get(id);
       setProjects(ps => ps.map(p => p.id === id ? updated : p));
     } catch {
-      setProjects(ps => ps.map(p => p.id === id ? { ...p, views: p.views + 1 } : p));
+      // leave views unchanged if API fails
     }
   };
 
@@ -68,7 +68,7 @@ export default function ShowcaseScreen() {
           </View>
         </Card>
 
-        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={p => openProject(p.id)} onLike={toggleLike} />)}
+        {filtered.map(p => <ProjectCard key={p.id} p={p} onOpen={() => openProject(p.id)} onLike={toggleLike} />)}
         {filtered.length === 0 && (
           <EmptyState icon="image" title="No projects found." body="Try clearing the search or add a new project." />
         )}
