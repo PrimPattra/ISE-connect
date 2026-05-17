@@ -4,6 +4,7 @@ import { TagPill } from '@/components/ui/tag-pill';
 import { Tooltip } from '@/components/ui/tooltip';
 import { C, F } from '@/constants/theme';
 import type { Job } from '@/types';
+import { timeAgo } from '@/utils/time';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
@@ -52,7 +53,7 @@ export function JobCard({ job, onOpen, onSave, isRecruiter, isOwnPosting }: Prop
         <View style={s.meta}>
           <View style={s.metaItem}><Icon name="pin" size={13} color={C.muted} /><Text style={s.metaText}>{job.location}</Text></View>
           <View style={s.metaItem}><Icon name="money" size={13} color={C.muted} /><Text style={s.metaText}>{job.comp}</Text></View>
-          <Text style={s.posted}>{job.posted}</Text>
+          <Text style={s.posted}>{timeAgo(job.posted)}</Text>
         </View>
       </Card>
     </TouchableOpacity>
