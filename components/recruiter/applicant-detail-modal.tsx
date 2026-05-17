@@ -4,6 +4,7 @@ import { TagPill } from '@/components/ui/tag-pill';
 import { Icon } from '@/components/icon';
 import { C, F } from '@/constants/theme';
 import type { Applicant, ApplicantStatus } from '@/types';
+import { getInitials } from '@/utils/time';
 
 interface Props {
   a: Applicant | null;
@@ -13,7 +14,7 @@ interface Props {
 
 export function ApplicantDetailModal({ a, onClose, onMove }: Props) {
   if (!a) return null;
-  const initials = a.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+  const initials = getInitials(a.name);
 
   return (
     <Modal

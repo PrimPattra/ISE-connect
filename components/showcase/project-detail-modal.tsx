@@ -5,6 +5,7 @@ import { Icon } from '@/components/icon';
 import { Ionicons } from '@expo/vector-icons';
 import { C, F } from '@/constants/theme';
 import type { Project } from '@/types';
+import { getInitials } from '@/utils/time';
 
 interface Props {
   p: Project | null;
@@ -17,7 +18,7 @@ interface Props {
 
 export function ProjectDetailModal({ p, onClose, hideStats = false, onEdit, onAddToShowcase, onLike }: Props) {
   if (!p) return null;
-  const initials = p.by.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+  const initials = getInitials(p.by.name);
 
   const footer = (onEdit || onAddToShowcase) ? (
     <View style={s.footerRow}>

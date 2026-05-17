@@ -1,4 +1,5 @@
 import * as api from '@/services/api';
+import { getInitials } from '@/utils/time';
 import { JobDetailModal } from '@/components/board/job-detail-modal';
 import { Icon } from '@/components/icon';
 import { AddProjectModal } from '@/components/profile/add-project-modal';
@@ -45,7 +46,7 @@ export default function ProfileScreen() {
 
   const saved = jobs.filter(j => j.saved);
   const myProjects = projects.filter(p => p.by.userId === user.profile.id);
-  const initials = user.profile.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('');
+  const initials = getInitials(user.profile.name);
 
   const handleAddProject = async (data: ProjectFormData) => {
     try {
